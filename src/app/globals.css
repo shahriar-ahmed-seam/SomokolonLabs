@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
+/*
+  Somokolon Labs — corporate software-services design system.
+  Light, editorial, high-contrast. One accent, lots of whitespace.
+*/
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --background-soft: #f5f6f8;
+  --ink: #0b1524;
+  --ink-soft: #56606f;
+  --accent: #d92d20;
+  --accent-dark: #b42318;
+  --border: #e6e8ec;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background-soft: var(--background-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-border: var(--border);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Thin uppercase eyebrow label used across sections */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Subtle dotted texture for feature bands */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(11, 21, 36, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
 }

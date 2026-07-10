@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Somokolon Labs
+
+The official website for **Somokolon Labs** — an AI and software development studio building
+LLM systems, web applications, and cloud infrastructure, engineered for production.
+
+🌐 Live site: [somokolonlabs.com](https://somokolonlabs.com) · Deployed on Vercel
+
+## Overview
+
+A modern, corporate marketing site for the studio, built as a fast, statically-rendered
+Next.js application. It presents the studio's services, product catalogue, and an engagement
+model, with a working contact/demo-request flow.
+
+### Pages
+
+- **Home** — hero, service overview, differentiators, engagement model, and tech stack.
+- **About** — the studio's mission, approach, and how it works.
+- **Services** — four service areas (AI & LLM, Web & Full-Stack, Cloud & MLOps, QA & System
+  Design), each with a dedicated detail page.
+- **Products** — a categorised product catalogue (AI Products, Business Software, Developer
+  Infrastructure) with individual product pages and a **Request a demo** flow.
+- **Contact** — a validated contact form with a demo-request pre-fill.
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org/) (App Router)
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/) for restrained scroll animations
+- [lucide-react](https://lucide.dev/) icons
+- [Unsplash API](https://unsplash.com/developers) for section imagery (server-side)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file:
 
-## Learn More
+```
+UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+```
 
-To learn more about Next.js, take a look at the following resources:
+The key is read only on the server and is never exposed to the client. If it's absent,
+image sections fall back to a gradient placeholder.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+  app/            # App Router pages (home, about, services, products, contact, api)
+  components/     # Header, Footer, ContactForm, CTABand, icons, motion
+  lib/
+    content.ts    # Single source of truth: services, products, copy
+    unsplash.ts   # Server-side image helper
+```
 
-## Deploy on Vercel
+All site copy — services, products, categories — lives in `src/lib/content.ts`. Add an entry
+there and it automatically appears in the navigation, listing pages, and detail pages.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm run start
+```
+
+---
+
+© Somokolon Labs. All rights reserved.
