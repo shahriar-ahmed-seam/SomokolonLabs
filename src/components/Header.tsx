@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { services, productCategories } from "@/lib/content";
 import { Icon } from "@/components/icons/Icon";
+import LogoMark from "@/components/LogoMark";
 
 type OpenMenu = "services" | "products" | null;
 
@@ -40,11 +41,9 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-ink text-sm font-bold text-white">
-            S
-          </span>
+          <LogoMark className="h-8 w-auto" />
           <span className="text-[17px] font-bold tracking-tight text-ink">
-            Somokolon<span className="text-accent">.</span>
+            Somokolon<span className="text-accent"> Labs</span>
           </span>
         </Link>
 

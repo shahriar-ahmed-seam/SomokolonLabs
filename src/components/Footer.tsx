@@ -2,6 +2,7 @@ import Link from "next/link";
 import { contact, services } from "@/lib/content";
 import { GithubIcon, LinkedinIcon } from "@/components/icons/BrandIcons";
 import { Mail, Phone, MapPin } from "lucide-react";
+import LogoMark from "@/components/LogoMark";
 
 export default function Footer() {
   return (
@@ -11,11 +12,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-sm font-bold text-ink">
-                S
-              </span>
+              <LogoMark className="h-8 w-auto" ink="#ffffff" />
               <span className="text-lg font-bold tracking-tight">
-                Somokolon<span className="text-accent">.</span>
+                Somokolon<span className="text-accent"> Labs</span>
               </span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
