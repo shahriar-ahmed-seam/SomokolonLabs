@@ -7,7 +7,10 @@ import {
   services,
   stats,
   techStack,
+  contact,
+  company,
 } from "@/lib/content";
+import { sortedPosts, formatDate } from "@/lib/insights";
 import { getUnsplashPhoto } from "@/lib/unsplash";
 import { Reveal } from "@/components/Reveal";
 import { Icon } from "@/components/icons/Icon";
@@ -15,6 +18,7 @@ import CTABand from "@/components/CTABand";
 
 export default async function Home() {
   const heroPhoto = await getUnsplashPhoto("software engineering team office modern");
+  const latestPosts = sortedPosts().slice(0, 3);
 
   return (
     <>
@@ -171,6 +175,67 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Insights + open source — evidence, not claims */}
+      <section className="border-t border-border bg-background-soft">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+            <Reveal>
+              <p className="eyebrow">Proof of work</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+                Read the notes. Read the code.
+              </h2>
+              <p className="mt-4 leading-relaxed text-ink-soft">
+                We write up what we build and publish what we can. Both are
+                open to anyone who wants to check our work.
+              </p>
+              <div className="mt-8 flex flex-col items-start gap-3">
+                <Link
+                  href="/insights"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
+                >
+                  All engineering notes <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+                <a
+                  href={contact.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-accent"
+                >
+                  {company.githubOrg} on GitHub
+                  <ArrowUpRight size={15} aria-hidden="true" />
+                </a>
+              </div>
+            </Reveal>
+
+            <ul className="flex flex-col gap-4 lg:col-span-2">
+              {latestPosts.map((post, i) => (
+                <Reveal key={post.slug} delay={i * 0.05}>
+                  <li>
+                    <Link
+                      href={`/insights/${post.slug}`}
+                      className="group block rounded-xl border border-border bg-white p-6 transition-colors hover:border-accent/40"
+                    >
+                      <time
+                        dateTime={post.date}
+                        className="text-xs font-medium text-ink-soft"
+                      >
+                        {formatDate(post.date)}
+                      </time>
+                      <h3 className="mt-2 text-lg font-bold tracking-tight text-ink group-hover:text-accent">
+                        {post.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+                        {post.summary}
+                      </p>
+                    </Link>
+                  </li>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* Tech stack */}
       <section className="border-t border-border bg-background-soft">
         <div className="mx-auto max-w-7xl px-6 py-16">
@@ -187,6 +252,17 @@ export default async function Home() {
                 </span>
               ))}
             </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="mt-8 text-center">
+              <Link
+                href="/capabilities"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
+              >
+                See the full capability breakdown{" "}
+                <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+            </p>
           </Reveal>
         </div>
       </section>

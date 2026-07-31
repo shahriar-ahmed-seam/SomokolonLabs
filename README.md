@@ -1,76 +1,123 @@
-# Somokolon Labs
+# Somokolon Labs — somokolonlabs.com
 
-The official website for **Somokolon Labs** — an AI and software development studio building
-LLM systems, web applications, and cloud infrastructure, engineered for production.
+Marketing and product site for Somokolon Labs, an AI & software development studio in Dhaka, Bangladesh.
 
-🌐 Live site: [somokolonlabs.com](https://somokolonlabs.com) · Deployed on Vercel
+<!-- Badge URL must match the final repo path. Update the org/repo segment if this
+     repository is renamed or transferred (currently assumes Somokolon-Labs/somokolonlabs.com). -->
+[![CI](https://github.com/Somokolon-Labs/somokolonlabs.com/actions/workflows/ci.yml/badge.svg)](https://github.com/Somokolon-Labs/somokolonlabs.com/actions/workflows/ci.yml)
 
-## Overview
+## What this repo is
 
-A modern, corporate marketing site for the studio, built as a fast, statically-rendered
-Next.js application. It presents the studio's services, product catalogue, and an engagement
-model, with a working contact/demo-request flow.
+The source for the public website at [somokolonlabs.com](https://somokolonlabs.com): studio
+positioning, service pages, a product catalogue, and a contact / demo-request flow. It is a
+statically rendered Next.js App Router application with a small set of server routes. Site
+content lives in `src/lib/content.ts`, so adding a service or product entry propagates to
+navigation, listing pages, and detail pages.
 
-### Pages
+## Tech stack
 
-- **Home** — hero, service overview, differentiators, engagement model, and tech stack.
-- **About** — the studio's mission, approach, and how it works.
-- **Services** — four service areas (AI & LLM, Web & Full-Stack, Cloud & MLOps, QA & System
-  Design), each with a dedicated detail page.
-- **Products** — a categorised product catalogue (AI Products, Business Software, Developer
-  Infrastructure) with individual product pages and a **Request a demo** flow.
-- **Contact** — a validated contact form with a demo-request pre-fill.
+| Layer | Choice |
+| --- | --- |
+| Framework | Next.js 16.2.10 (App Router) |
+| UI | React 19.2.4 |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v4 (via `@tailwindcss/postcss`) |
+| Animation | Framer Motion |
+| Icons | lucide-react |
+| Linting | ESLint 9 with `eslint-config-next` |
+| Package manager | npm |
+| Hosting | Vercel |
 
-## Tech Stack
+## Getting started
 
-- [Next.js 16](https://nextjs.org/) (App Router)
-- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- [Framer Motion](https://www.framer.com/motion/) for restrained scroll animations
-- [lucide-react](https://lucide.dev/) icons
-- [Unsplash API](https://unsplash.com/developers) for section imagery (server-side)
-
-## Getting Started
+Prerequisites: Node 22 or newer and npm.
 
 ```bash
 npm install
+cp .env.example .env.local   # then fill in the keys you need
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+The dev server runs at http://localhost:3000.
 
-### Environment variables
+<!-- TODO(you): commit a .env.example listing the variables below (with empty values) so this
+     step works out of the box for new contributors. -->
 
-Create a `.env.local` file:
+## Environment variables
 
-```
-UNSPLASH_ACCESS_KEY=your_unsplash_access_key
-```
+All values are optional for local development — the site degrades gracefully without them.
 
-The key is read only on the server and is never exposed to the client. If it's absent,
-image sections fall back to a gradient placeholder.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `UNSPLASH_ACCESS_KEY` | No | Build-time image sourcing for section imagery. Server-side only; sections fall back to a gradient when absent. |
+| `RESEND_API_KEY` | No | Email delivery for the contact form. Without it, submissions are not emailed. |
+| `CONTACT_TO_EMAIL` | No | Destination address for contact-form submissions. Defaults to hello@somokolonlabs.com. |
+| `NEXT_PUBLIC_SITE_URL` | No | Canonical site origin used for metadata and absolute URLs (e.g. `https://somokolonlabs.com`). |
+
+Never commit `.env.local`; `.env*` is git-ignored.
 
 ## Project structure
 
 ```
 src/
-  app/            # App Router pages (home, about, services, products, contact, api)
-  components/     # Header, Footer, ContactForm, CTABand, icons, motion
+  app/
+    layout.tsx              # Root layout, fonts, metadata
+    page.tsx                # Home
+    globals.css             # Tailwind v4 entry + design tokens
+    about/page.tsx
+    contact/page.tsx
+    services/page.tsx
+    services/[slug]/page.tsx
+    products/page.tsx
+    products/[category]/page.tsx
+    products/[category]/[product]/page.tsx
+    api/contact/route.ts    # Contact form handler
+  components/
+    Header.tsx  Footer.tsx  ContactForm.tsx  CTABand.tsx
+    LogoMark.tsx  Reveal.tsx
+    icons/                  # Icon.tsx, BrandIcons.tsx
   lib/
-    content.ts    # Single source of truth: services, products, copy
-    unsplash.ts   # Server-side image helper
+    content.ts              # Single source of truth for services, products, copy
+    unsplash.ts             # Server-side image helper
 ```
 
-All site copy — services, products, categories — lives in `src/lib/content.ts`. Add an entry
-there and it automatically appears in the navigation, listing pages, and detail pages.
+## Available scripts
 
-## Build
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint across the project |
+| `npx tsc --noEmit` | Typecheck only (also run in CI) |
+
+## Docker
+
+The Dockerfile builds a multi-stage production image and runs the Next.js standalone server as
+a non-root user. It requires `output: "standalone"` in `next.config.ts`.
 
 ```bash
-npm run build
-npm run start
+docker build -t somokolon-labs-site .
+docker run --rm -p 3000:3000 somokolon-labs-site
 ```
 
----
+Or with Compose:
 
-© Somokolon Labs. All rights reserved.
+```bash
+docker compose up --build
+```
+
+## Deployment
+
+Production deploys run through Vercel's Git integration: pushes to `main` deploy to production,
+pull requests get preview deployments. Environment variables are managed in the Vercel project
+settings, not in this repo. CI (typecheck, lint, build) runs on every push and pull request to
+`main`.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).

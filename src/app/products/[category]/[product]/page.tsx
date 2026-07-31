@@ -2,9 +2,16 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { products, productCategories, productsByCategory } from "@/lib/content";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Award, Check } from "lucide-react";
+import {
+  products,
+  productCategories,
+  productsByCategory,
+  company,
+} from "@/lib/content";
 import { getUnsplashPhoto } from "@/lib/unsplash";
+import { absoluteUrl } from "@/lib/site";
+import { GithubIcon } from "@/components/icons/BrandIcons";
 import { Reveal } from "@/components/Reveal";
 import CTABand from "@/components/CTABand";
 
@@ -17,10 +24,28 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string; product: string }>;
 }): Promise<Metadata> {
-  const { product } = await params;
+  const { category, product } = await params;
   const item = products.find((p) => p.slug === product);
   if (!item) return { title: "Product" };
-  return { title: item.name, description: item.tagline };
+
+  const description = `${item.tagline}. ${item.description}`.slice(0, 300);
+
+  return {
+    title: item.name,
+    description,
+    alternates: { canonical: `/products/${category}/${item.slug}` },
+    openGraph: {
+      title: item.name,
+      description,
+      url: absoluteUrl(`/products/${category}/${item.slug}`),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: item.name,
+      description: item.tagline,
+    },
+  };
 }
 
 const statusStyles: Record<string, string> = {
@@ -43,9 +68,29 @@ export default async function ProductDetail({
   const related = productsByCategory(category).filter((p) => p.slug !== product);
 
   const demoHref = `/contact?product=${encodeURIComponent(item.name)}`;
+  const metrics = item.metrics ?? [];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: item.name,
+    description: item.description,
+    applicationCategory: cat?.name ?? "Software",
+    url: absoluteUrl(`/products/${category}/${item.slug}`),
+    author: { "@type": "Organization", name: company.name },
+    publisher: { "@type": "Organization", name: company.name },
+    ...(item.repo ? { codeRepository: item.repo } : {}),
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
       {/* Header */}
       <section className="border-b border-border bg-background-soft">
         <div className="mx-auto max-w-7xl px-6 py-16">
@@ -69,6 +114,17 @@ export default async function ProductDetail({
                 <h1 className="mt-4 text-4xl font-bold tracking-tight text-ink sm:text-5xl">{item.name}</h1>
                 <p className="mt-3 text-lg font-medium text-accent">{item.tagline}</p>
                 <p className="mt-5 text-base leading-relaxed text-ink-soft">{item.description}</p>
+
+                {item.recognition && (
+                  <p className="mt-5 inline-flex items-start gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-sm font-medium text-ink">
+                    <Award
+                      size={16}
+                      className="mt-0.5 shrink-0 text-accent"
+                      aria-hidden="true"
+                    />
+                    {item.recognition}
+                  </p>
+                )}
 
                 <div className="mt-8 flex flex-wrap gap-4">
                   {item.demoAvailable ? (
@@ -118,6 +174,31 @@ export default async function ProductDetail({
         </div>
       </section>
 
+      {/* Measured results — only renders when there are real numbers to show. */}
+      {metrics.length > 0 && (
+        <section className="border-b border-border bg-ink">
+          <div className="mx-auto max-w-7xl px-6 py-14">
+            <Reveal>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">
+                Measured results
+              </p>
+            </Reveal>
+            <dl className="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+              {metrics.map((metric, i) => (
+                <Reveal key={metric.label} delay={i * 0.05}>
+                  <dt className="text-3xl font-bold tracking-tight text-white">
+                    {metric.value}
+                  </dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-white/60">
+                    {metric.label}
+                  </dd>
+                </Reveal>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
+
       {/* Features + spec */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
@@ -157,6 +238,39 @@ export default async function ProductDetail({
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-soft">Status</h3>
                 <p className="mt-2 text-sm font-semibold text-ink">{item.status}</p>
               </div>
+
+              {/* Links render only when they exist, so nothing here 404s. */}
+              {(item.demoUrl || item.repo) && (
+                <div className="mt-6 flex flex-col gap-3 border-t border-border pt-6">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                    Links
+                  </h3>
+                  {item.demoUrl && (
+                    <a
+                      href={item.demoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:text-accent-dark"
+                    >
+                      Live demo
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                    </a>
+                  )}
+                  {item.repo && (
+                    <a
+                      href={item.repo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent"
+                    >
+                      <GithubIcon size={15} />
+                      Source code
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
+              )}
+
               <Link
                 href={demoHref}
                 className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"

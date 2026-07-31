@@ -8,6 +8,10 @@ import {
   Users,
   Briefcase,
   Server,
+  Database,
+  LayoutTemplate,
+  GitBranch,
+  Gauge,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,9 +27,23 @@ const map: Record<string, LucideIcon> = {
   brain: Brain,
   briefcase: Briefcase,
   server: Server,
+  database: Database,
+  layout: LayoutTemplate,
+  shield: ShieldCheck,
+  git: GitBranch,
+  gauge: Gauge,
 };
 
-export function Icon({ name, size = 22, className }: { name: string; size?: number; className?: string }) {
+export function Icon({
+  name,
+  size = 22,
+  className,
+}: {
+  name: string;
+  size?: number;
+  className?: string;
+}) {
   const Cmp = map[name] ?? Brain;
-  return <Cmp size={size} className={className} />;
+  // Decorative by default — the adjacent text carries the meaning.
+  return <Cmp size={size} className={className} aria-hidden="true" />;
 }

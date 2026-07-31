@@ -6,14 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@vercel/analytics": "1.6.1",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.24.0",
-    "next": "16.2.10",
+    "next": "^16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4"
+  },
+  "//overrides": [
+    "Security mitigations for transitive dependencies of next@16.2.12, which is",
+    "the latest release and still resolves vulnerable versions:",
+    "  postcss <=8.5.17 — GHSA-r28c-9q8g-f849 (sourceMappingURL path traversal),",
+    "                     GHSA-6g55-p6wh-862q, GHSA-qx2v-qp2m-jg93",
+    "  sharp   <0.35.0  — GHSA-f88m-g3jw-g9cj (inherited libvips CVEs)",
+    "Re-check on each Next upgrade and drop these once upstream resolves clean.",
+    "Caveat: Next vendors a copy of postcss inside its compiled output, which an",
+    "npm override cannot reach; this closes the resolvable dependency only."
+  ],
+  "overrides": {
+    "postcss": "^8.5.25",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -21,7 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.2.12",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

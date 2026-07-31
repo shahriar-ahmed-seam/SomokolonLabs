@@ -1,10 +1,14 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 // Restrained, professional scroll reveal: short fade + small rise, once only,
-// transform/opacity only (GPU-composited). Respects reduced motion via CSS.
+// transform/opacity only (GPU-composited).
+//
+// Accessibility: prefers-reduced-motion is honoured in JS via useReducedMotion.
+// CSS alone cannot suppress this — framer-motion writes inline transforms — so
+// when the user opts out we render the content statically with no animation.
 export function Reveal({
   children,
   className,
@@ -14,6 +18,12 @@ export function Reveal({
   className?: string;
   delay?: number;
 }) {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       className={className}
