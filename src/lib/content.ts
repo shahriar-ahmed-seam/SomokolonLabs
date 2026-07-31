@@ -253,6 +253,15 @@ export const productCategories: ProductCategory[] = [
   },
 ];
 
+/**
+ * A single measurable, verifiable fact about a product.
+ *
+ * Rule: only put numbers here that you can actually defend if asked. An empty
+ * `metrics` array renders nothing — that is the correct state until you have a
+ * real number. Do not fill these with estimates or aspirations.
+ */
+export type ProductMetric = { value: string; label: string };
+
 export type Product = {
   slug: string;
   category: string; // ProductCategory slug
@@ -264,6 +273,14 @@ export type Product = {
   features: string[];
   imageQuery: string;
   demoAvailable: boolean;
+  /** Public repo URL. Omit while the repo is private — nothing renders. */
+  repo?: string;
+  /** Live, publicly reachable demo. Omit until it actually resolves. */
+  demoUrl?: string;
+  /** Verified numbers only. See ProductMetric. */
+  metrics?: ProductMetric[];
+  /** Third-party validation (hackathon placement, etc.). Factual only. */
+  recognition?: string;
 };
 
 export const products: Product[] = [
@@ -303,6 +320,8 @@ export const products: Product[] = [
     ],
     imageQuery: "digital marketing campaign analytics",
     demoAvailable: true,
+    recognition:
+      "Finalist — INFINITE AI Builders, MarTech & Branding category",
   },
   {
     slug: "hilltrack-pulse",
@@ -339,6 +358,10 @@ export const products: Product[] = [
     ],
     imageQuery: "mobile health app medical technology",
     demoAvailable: false,
+    metrics: [
+      { value: "~70 MB", label: "App footprint, down from 600 MB+" },
+      { value: "100%", label: "On-device inference — no audio leaves the phone" },
+    ],
   },
   // --- Business Software ---
   {
@@ -358,6 +381,9 @@ export const products: Product[] = [
     ],
     imageQuery: "retail point of sale checkout store",
     demoAvailable: true,
+    // TODO(you): this one is Live, so it should carry the strongest numbers.
+    // Add what you can verify: transactions processed, shops deployed, uptime.
+    metrics: [],
   },
   // --- Developer Infrastructure ---
   {
@@ -377,6 +403,10 @@ export const products: Product[] = [
     ],
     imageQuery: "server data center infrastructure",
     demoAvailable: true,
+    recognition: "Finalist — BUET CSE Fest Hackathon",
+    // TODO(you): add real load-test numbers once measured, e.g.
+    // { value: "N req/s", label: "Sustained throughput at p99 < X ms" }
+    metrics: [],
   },
   {
     slug: "vector-vault-db",
@@ -405,14 +435,168 @@ export function productsByCategory(categorySlug: string): Product[] {
 export const contact = {
   email: "hello@somokolonlabs.com",
   phone: "+880 1700-942829",
-  github: "https://github.com/somokolon-labs",
+  github: "https://github.com/Somokolon-Labs",
   linkedin: "https://www.linkedin.com/in/shahriar-ahmed-seam/",
   location: "Dhaka, Bangladesh",
+};
+
+/** Organization facts. Used for JSON-LD, the footer, and legal pages. */
+export const company = {
+  name: "Somokolon Labs",
+  legalName: "Somokolon Labs",
+  tagline: "AI & software development studio",
+  description:
+    "Somokolon Labs is an AI and software development studio building LLM systems, web applications, and cloud infrastructure — engineered for production.",
+  founded: "2025",
+  founder: "Shahriar Ahmed Seam",
+  city: "Dhaka",
+  country: "Bangladesh",
+  githubOrg: "Somokolon-Labs",
+  // TODO(you): set this to a real mailbox before launch (Cloudflare Email
+  // Routing or Zoho both work) — it is published on the site.
+  securityEmail: "security@somokolonlabs.com",
 };
 
 export const nav: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
+  { href: "/products", label: "Products" },
+  { href: "/open-source", label: "Open source" },
+  { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
+];
+
+// ---------------------------------------------------------------------------
+// Capabilities — the tech stack, grouped so it reads as competence rather than
+// a keyword dump.
+// ---------------------------------------------------------------------------
+
+export type CapabilityGroup = {
+  name: string;
+  description: string;
+  icon: string;
+  items: string[];
+};
+
+export const capabilityGroups: CapabilityGroup[] = [
+  {
+    name: "AI & machine learning",
+    description:
+      "Model training, fine-tuning, and inference — from transformers to diffusion and on-device CNNs.",
+    icon: "brain",
+    items: [
+      "PyTorch",
+      "Hugging Face Transformers",
+      "PEFT / LoRA",
+      "LangGraph",
+      "Ollama",
+      "ONNX Runtime",
+      "scikit-learn",
+      "OpenCV",
+    ],
+  },
+  {
+    name: "Retrieval & data",
+    description:
+      "Vector search, hybrid retrieval, and the storage layers underneath them.",
+    icon: "database",
+    items: ["pgvector", "Qdrant", "FAISS", "PostgreSQL", "Redis", "Kafka"],
+  },
+  {
+    name: "Backend & APIs",
+    description:
+      "Typed, documented services built to be called by something other than a demo script.",
+    icon: "server",
+    items: ["FastAPI", "Python", "Node.js", "TypeScript", "gRPC", "REST", "WebSockets"],
+  },
+  {
+    name: "Frontend",
+    description:
+      "Accessible, fast interfaces — server-rendered by default, interactive where it matters.",
+    icon: "layout",
+    items: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "Flutter"],
+  },
+  {
+    name: "Infrastructure & MLOps",
+    description:
+      "Containerized services, reproducible deploys, and the observability to know they work.",
+    icon: "cloud",
+    items: [
+      "Docker",
+      "Kubernetes",
+      "GitHub Actions",
+      "Terraform",
+      "Prometheus",
+      "Grafana",
+      "AWS",
+      "Vercel",
+    ],
+  },
+  {
+    name: "Quality & evaluation",
+    description:
+      "Tests for the software, evals for the models. Both run in CI.",
+    icon: "shield",
+    items: ["pytest", "Playwright", "ESLint", "RAGAS-style evals", "Load testing"],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Open source — what the GitHub organization actually contains.
+// Keep this list honest: every entry should be a repo someone can open.
+// ---------------------------------------------------------------------------
+
+export type Repo = {
+  name: string;
+  description: string;
+  language: string;
+  url: string;
+  /** Set false for repos that are not public yet — renders as "Coming soon". */
+  isPublic: boolean;
+};
+
+export const openSourceRepos: Repo[] = [
+  {
+    name: "somokolonlabs.com",
+    description:
+      "This website. Next.js App Router, Tailwind v4, statically rendered, deployed on Vercel with CI on every push.",
+    language: "TypeScript",
+    url: `https://github.com/${company.githubOrg}/somokolonlabs.com`,
+    isPublic: true,
+  },
+  // TODO(you): flip `isPublic` to true as each repo lands in the org, and
+  // correct the URL slug to match the real repo name.
+  {
+    name: "nexus-agent-orchestrator",
+    description:
+      "Multi-agent orchestration platform — plan, research, code, critique loop with RAG grounding and local-model support.",
+    language: "Python",
+    url: `https://github.com/${company.githubOrg}/nexus-agent-orchestrator`,
+    isPublic: false,
+  },
+  {
+    name: "orionstream-ml",
+    description:
+      "Event-driven ML inference platform with decoupled ingest, inference, and delivery services on Kubernetes.",
+    language: "Python",
+    url: `https://github.com/${company.githubOrg}/orionstream-ml`,
+    isPublic: false,
+  },
+  {
+    name: "vector-vault-db",
+    description:
+      "Vector database written from scratch in C++17 — HNSW and IVF indexes, AVX-512 distance kernels, Python bindings.",
+    language: "C++",
+    url: `https://github.com/${company.githubOrg}/vector-vault-db`,
+    isPublic: false,
+  },
+  {
+    name: "resonet",
+    description:
+      "On-device respiratory screening from cough audio. Audio pipeline reimplemented in pure Dart over ONNX Runtime.",
+    language: "Dart",
+    url: `https://github.com/${company.githubOrg}/resonet`,
+    isPublic: false,
+  },
 ];

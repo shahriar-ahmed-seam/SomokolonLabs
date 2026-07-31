@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: string }) {
+const inputClass =
+  "mt-2 w-full rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20";
+
+export default function ContactForm({
+  defaultMessage = "",
+}: {
+  defaultMessage?: string;
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const errorId = useId();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -15,11 +23,17 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
     setError("");
 
     const form = e.currentTarget;
+    const value = (field: string) =>
+      (form.elements.namedItem(field) as HTMLInputElement | HTMLTextAreaElement)
+        .value;
+
     const data = {
-      name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      company: (form.elements.namedItem("company") as HTMLInputElement).value,
-      message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+      name: value("name"),
+      email: value("email"),
+      company: value("company"),
+      message: value("message"),
+      // Honeypot — left empty by humans, filled by bots.
+      website: value("website"),
     };
 
     try {
@@ -42,15 +56,20 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
 
   if (status === "success") {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-background-soft p-12 text-center">
+      <div
+        role="status"
+        className="flex flex-col items-center justify-center rounded-2xl border border-border bg-background-soft p-12 text-center"
+      >
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
-          <CheckCircle2 size={28} />
+          <CheckCircle2 size={28} aria-hidden="true" />
         </div>
         <h3 className="mt-5 text-xl font-bold text-ink">Message received</h3>
         <p className="mt-2 max-w-sm text-sm text-ink-soft">
-          Thanks for reaching out. We&apos;ll get back to you within a couple of business days.
+          Thanks for reaching out. We&apos;ll get back to you within a couple of
+          business days.
         </p>
         <button
+          type="button"
           onClick={() => setStatus("idle")}
           className="mt-6 text-sm font-semibold text-accent hover:text-accent-dark"
         >
@@ -61,7 +80,10 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-8">
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-2xl border border-border bg-white p-8"
+    >
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div className="sm:col-span-1">
           <label htmlFor="name" className="text-sm font-medium text-ink">
@@ -71,7 +93,9 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
             id="name"
             name="name"
             required
-            className="mt-2 w-full rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            maxLength={120}
+            autoComplete="name"
+            className={inputClass}
             placeholder="Your name"
           />
         </div>
@@ -84,7 +108,9 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
             name="email"
             type="email"
             required
-            className="mt-2 w-full rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            maxLength={200}
+            autoComplete="email"
+            className={inputClass}
             placeholder="you@company.com"
           />
         </div>
@@ -95,7 +121,9 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
           <input
             id="company"
             name="company"
-            className="mt-2 w-full rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            maxLength={160}
+            autoComplete="organization"
+            className={inputClass}
             placeholder="Your company"
           />
         </div>
@@ -108,16 +136,34 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
             name="message"
             required
             rows={5}
+            maxLength={5000}
             defaultValue={defaultMessage}
-            className="mt-2 w-full resize-none rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            aria-describedby={status === "error" ? errorId : undefined}
+            className={`${inputClass} resize-none`}
             placeholder="Tell us about your project, timeline, and goals."
           />
         </div>
       </div>
 
-      {status === "error" && (
-        <p className="mt-4 text-sm text-accent">{error}</p>
-      )}
+      {/*
+        Honeypot. Hidden from sight and from assistive tech, and excluded from
+        the tab order, so no real user can reach it — but bots that fill every
+        field will trip it.
+      */}
+      <div aria-hidden="true" className="absolute h-0 w-0 overflow-hidden">
+        <label htmlFor="website">Website</label>
+        <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
+
+      {/* aria-live so the failure is announced, not just displayed. */}
+      <p
+        id={errorId}
+        role="alert"
+        aria-live="polite"
+        className="mt-4 text-sm text-accent empty:mt-0"
+      >
+        {status === "error" ? error : ""}
+      </p>
 
       <button
         type="submit"
@@ -125,7 +171,7 @@ export default function ContactForm({ defaultMessage = "" }: { defaultMessage?: 
         className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark disabled:opacity-60"
       >
         {status === "submitting" ? "Sending..." : "Send message"}
-        {status !== "submitting" && <ArrowRight size={16} />}
+        {status !== "submitting" && <ArrowRight size={16} aria-hidden="true" />}
       </button>
     </form>
   );
