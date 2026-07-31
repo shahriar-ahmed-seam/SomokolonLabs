@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { contact } from "@/lib/content";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -156,14 +157,30 @@ export default function ContactForm({
       </div>
 
       {/* aria-live so the failure is announced, not just displayed. */}
-      <p
-        id={errorId}
-        role="alert"
-        aria-live="polite"
-        className="mt-4 text-sm text-accent empty:mt-0"
-      >
-        {status === "error" ? error : ""}
-      </p>
+      <div id={errorId} role="alert" aria-live="polite">
+        {status === "error" && (
+          <div className="mt-4 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3">
+            <p className="text-sm text-accent">{error}</p>
+            {/* Clickable escape hatch — a dead-end error message is no use. */}
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              <a
+                href={`mailto:${contact.email}`}
+                className="font-semibold text-ink underline decoration-ink/20 underline-offset-2 hover:text-accent"
+              >
+                {contact.email}
+              </a>
+              <a
+                href={contact.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-ink underline decoration-ink/20 underline-offset-2 hover:text-accent"
+              >
+                Message us on LinkedIn
+              </a>
+            </p>
+          </div>
+        )}
+      </div>
 
       <button
         type="submit"

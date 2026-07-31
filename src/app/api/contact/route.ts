@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { contact, company } from "@/lib/content";
 
 /**
+ * Fallback shown when we cannot deliver the message. Offers LinkedIn alongside
+ * email, because the custom mailbox may not be provisioned yet — a visitor
+ * should always have at least one channel that actually reaches someone.
+ */
+const FALLBACK_CONTACT = `Please email ${contact.email} or reach us on LinkedIn instead.`;
+
+/**
  * Contact / demo-request endpoint.
  *
  * Delivery goes through Resend's REST API over plain fetch — no SDK, because
@@ -158,7 +165,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             ok: false,
-            error: `Our form is temporarily unavailable. Please email ${contact.email} directly.`,
+            error: `Our form is temporarily unavailable. ${FALLBACK_CONTACT}`,
           },
           { status: 503 }
         );
@@ -177,7 +184,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error: `Something went wrong sending your message. Please email ${contact.email} directly.`,
+        error: `Something went wrong sending your message. ${FALLBACK_CONTACT}`,
       },
       { status: 500 }
     );
