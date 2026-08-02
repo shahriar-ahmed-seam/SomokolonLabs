@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import type { Product } from "@/lib/products";
+import { demoHref, type Product } from "@/lib/products";
 
 /**
  * Shared product card. Used on the products index and on category pages so the
@@ -11,6 +11,8 @@ import type { Product } from "@/lib/products";
  * point of the card is that the visitor sees the actual thing before clicking.
  */
 export default function ProductCard({ product }: { product: Product }) {
+  const demo = demoHref(product);
+
   return (
     <Link
       href={`/products/${product.category}/${product.slug}`}
@@ -31,7 +33,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {product.demoUrl && (
+        {demo && (
           <span className="absolute left-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
             Live demo
           </span>

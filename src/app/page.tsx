@@ -9,19 +9,24 @@ import {
   techStack,
   featuredProducts,
   products,
+  productCategories,
 } from "@/lib/content";
 import { sortedPosts, formatDate } from "@/lib/insights";
+import { getUnsplashPhoto } from "@/lib/unsplash";
 import { Reveal } from "@/components/Reveal";
 import { Icon } from "@/components/icons/Icon";
 import CTABand from "@/components/CTABand";
 
-export default function Home() {
+export default async function Home() {
+  // The landing page uses editorial photography deliberately. Product
+  // screenshots live on /products and the product detail pages, where a visitor
+  // has already chosen to look at specific software.
+  const heroPhoto = await getUnsplashPhoto(
+    "software engineering team office modern"
+  );
   const latestPosts = sortedPosts().slice(0, 2);
   const featured = featuredProducts();
   const stats = getStats();
-
-  // Hero visual is one of our own products, not stock photography.
-  const heroProduct = products.find((p) => p.slug === "coregrid");
 
   return (
     <>
@@ -72,33 +77,20 @@ export default function Home() {
           </div>
 
           <Reveal delay={0.1} className="flex items-center">
-            <figure className="w-full">
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-background-soft shadow-[0_24px_60px_-30px_rgba(11,21,36,0.4)]">
-                {heroProduct?.screenshot ? (
-                  <Image
-                    src={heroProduct.screenshot}
-                    alt={`${heroProduct.name} — ${heroProduct.tagline}`}
-                    fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 1024px) 100vw, 640px"
-                    priority
-                  />
-                ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-ink/5 to-accent/10" />
-                )}
-              </div>
-              {heroProduct && (
-                <figcaption className="mt-3 text-xs text-ink-soft">
-                  <Link
-                    href={`/products/${heroProduct.category}/${heroProduct.slug}`}
-                    className="font-semibold text-ink hover:text-accent"
-                  >
-                    {heroProduct.name}
-                  </Link>{" "}
-                  — {heroProduct.tagline}
-                </figcaption>
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-background-soft">
+              {heroPhoto.url ? (
+                <Image
+                  src={heroPhoto.url}
+                  alt={heroPhoto.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                  priority
+                />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-ink/5 to-accent/10" />
               )}
-            </figure>
+            </div>
           </Reveal>
         </div>
       </section>
@@ -175,44 +167,49 @@ export default function Home() {
             {featured.map((product, i) => (
               <Reveal key={product.slug} delay={i * 0.04}>
                 <li className="h-full">
+                  {/* Typographic cards, no screenshots — the imagery stays on
+                      /products, so the landing page reads as editorial. */}
                   <Link
                     href={`/products/${product.category}/${product.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-accent/50"
+                    className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-7 transition-colors hover:border-accent/50"
                   >
-                    <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-ink">
-                      {product.screenshot ? (
-                        <Image
-                          src={product.screenshot}
-                          alt={`${product.name} interface`}
-                          fill
-                          className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-white/[0.04] text-sm text-white/40">
-                          {product.name}
-                        </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-white/40">
+                        {productCategories.find((c) => c.slug === product.category)?.name}
+                      </span>
+                      {product.demoUrl && (
+                        <span className="rounded-full border border-accent/40 px-2 py-0.5 text-[11px] font-semibold text-accent">
+                          Live
+                        </span>
                       )}
                     </div>
 
-                    <div className="flex flex-1 flex-col p-6">
-                      <h3 className="text-lg font-bold tracking-tight text-white group-hover:text-accent">
-                        {product.name}
-                      </h3>
-                      <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">
-                        {product.tagline}
-                      </p>
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {product.stack.slice(0, 3).map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded-md border border-white/10 px-2 py-0.5 text-[11px] font-medium text-white/50"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
+                    <h3 className="mt-4 text-xl font-bold tracking-tight text-white group-hover:text-accent">
+                      {product.name}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">
+                      {product.tagline}
+                    </p>
+
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {product.stack.slice(0, 3).map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded-md border border-white/10 px-2 py-0.5 text-[11px] font-medium text-white/50"
+                        >
+                          {tech}
+                        </span>
+                      ))}
                     </div>
+
+                    <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
+                      View product
+                      <ArrowRight
+                        size={14}
+                        aria-hidden="true"
+                        className="transition-transform group-hover:translate-x-1"
+                      />
+                    </span>
                   </Link>
                 </li>
               </Reveal>

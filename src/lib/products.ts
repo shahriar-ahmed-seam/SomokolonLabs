@@ -62,6 +62,15 @@ export type Product = {
   features: string[];
   /** Verified reachable. Omit if the deployment is down. */
   demoUrl?: string;
+  /**
+   * Branded host for the demo, e.g. "cartograph.somokolonlabs.com".
+   *
+   * Once the subdomain is attached in Vercel and DNS resolves, set this and the
+   * site links here instead of the *.vercel.app URL. Flip products over one at
+   * a time — `demoUrl` stays as the fallback until you do.
+   * See docs/demo-domains.md for the setup.
+   */
+  demoDomain?: string;
   /** Path under /public. Omit if no capture exists yet. */
   screenshot?: string;
   /** Only numbers we can defend. Omit rather than estimate. */
@@ -472,6 +481,28 @@ export const products: Product[] = [
     metrics: [{ value: "33 landmarks", label: "Tracked per frame, on-device" }],
   },
 ];
+
+/**
+ * Where a product's "Open live demo" button points.
+ *
+ * Prefers our own branded subdomain when one is configured, falling back to the
+ * raw deployment URL. Every link in the UI goes through this, so moving a
+ * product onto somokolonlabs.com is a one-line change in the catalogue.
+ */
+export function demoHref(product: Product): string | undefined {
+  if (product.demoDomain) return `https://${product.demoDomain}`;
+  return product.demoUrl;
+}
+
+/** True when the demo is served from our own domain rather than *.vercel.app. */
+export function isBrandedDemo(product: Product): boolean {
+  return Boolean(product.demoDomain);
+}
+
+/** The subdomain a product should get. Used by scripts/plan-demo-domains.mjs. */
+export function intendedDemoDomain(product: Product): string {
+  return `${product.slug}.somokolonlabs.com`;
+}
 
 export function productsByCategory(categorySlug: string): Product[] {
   return products.filter((p) => p.category === categorySlug);

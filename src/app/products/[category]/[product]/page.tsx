@@ -8,6 +8,7 @@ import {
   productCategories,
   productsByCategory,
   company,
+  demoHref,
 } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
 import { Reveal } from "@/components/Reveal";
@@ -67,6 +68,7 @@ export default async function ProductDetail({
   const related = productsByCategory(category).filter((p) => p.slug !== product);
   const metrics = item.metrics ?? [];
   const enquiryHref = `/contact?product=${encodeURIComponent(item.name)}`;
+  const demo = demoHref(item);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,9 +122,9 @@ export default async function ProductDetail({
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-4">
-                  {item.demoUrl && (
+                  {demo && (
                     <a
-                      href={item.demoUrl}
+                      href={demo}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
@@ -234,9 +236,9 @@ export default async function ProductDetail({
                 <p className="mt-2 text-sm font-semibold text-ink">{item.status}</p>
               </div>
 
-              {item.demoUrl && (
+              {demo && (
                 <a
-                  href={item.demoUrl}
+                  href={demo}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
