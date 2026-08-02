@@ -1,42 +1,16 @@
 /**
  * Prints the subdomain plan for moving product demos onto somokolonlabs.com.
  *
- * Reads the catalogue so the list can never drift from what the site shows.
- * See docs/demo-domains.md for the DNS and Vercel steps.
+ * Reads the catalogue through the shared reader, so the list can never drift
+ * from what the site actually shows. See docs/demo-domains.md for the DNS and
+ * Vercel steps.
  *
  * Usage: node scripts/plan-demo-domains.mjs
  */
 
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { readCatalogue } from "./lib/read-catalogue.mjs";
 
-// products.ts is TypeScript, so parse the fields we need rather than importing.
-const source = await readFile(
-  path.join(process.cwd(), "src", "lib", "products.ts"),
-  "utf8"
-);
-
-// Only look inside the products array — productCategories also has `slug` keys
-// and would otherwise be counted as products.
-const productsStart = source.indexOf("export const products");
-if (productsStart === -1) {
-  console.error("could not locate the products array in src/lib/products.ts");
-  process.exit(1);
-}
-const productsSource = source.slice(productsStart);
-
-const entries = [];
-const blocks = productsSource.split(/\n\s*\{\s*\n\s*slug:/).slice(1);
-
-for (const block of blocks) {
-  const slug = block.match(/^\s*"([^"]+)"/)?.[1];
-  if (!slug) continue;
-  const name = block.match(/\n\s*name:\s*"([^"]+)"/)?.[1];
-  const demoUrl = block.match(/\n\s*demoUrl:\s*"([^"]+)"/)?.[1];
-  const demoDomain = block.match(/\n\s*demoDomain:\s*"([^"]+)"/)?.[1];
-  if (!name) continue;
-  entries.push({ slug, name, demoUrl, demoDomain });
-}
+const entries = await readCatalogue();
 
 // A subdomain only makes sense for deployments we control. Vector Vault's
 // "demo" is its PyPI page, which is not ours to rehost.
