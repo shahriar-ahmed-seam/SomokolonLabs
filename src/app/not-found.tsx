@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react";
 const suggestions = [
   { href: "/services", label: "Services" },
   { href: "/products", label: "Products" },
-  { href: "/open-source", label: "Open source" },
   { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
 ];

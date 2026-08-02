@@ -11,9 +11,8 @@ import LogoMark from "@/components/LogoMark";
 type OpenMenu = "services" | "products" | null;
 
 const simpleLinks = [
-  { href: "/insights", label: "Insights" },
-  { href: "/open-source", label: "Open source" },
   { href: "/about", label: "About" },
+  { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
 ];
 

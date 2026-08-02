@@ -1,4 +1,9 @@
 // Single source of truth for all site copy. Edit here; pages render from it.
+// The product catalogue lives in ./products and is re-exported below.
+
+export * from "./products";
+
+import { products } from "./products";
 
 export type Service = {
   slug: string;
@@ -136,7 +141,6 @@ export const services: Service[] = [
   },
 ];
 
-// "What we offer" — how the studio works (adapted from an IT-firm blueprint, kept honest for a boutique studio).
 export const differentiators: { title: string; description: string; icon: string }[] = [
   {
     title: "Senior-Led Delivery",
@@ -164,7 +168,6 @@ export const differentiators: { title: string; description: string; icon: string
   },
 ];
 
-// Engagement model (mirrors the IT-firm structure; honest and generic).
 export const engagement: { step: string; title: string; description: string }[] = [
   {
     step: "01",
@@ -192,12 +195,24 @@ export const engagement: { step: string; title: string; description: string }[] 
   },
 ];
 
-export const stats: { value: string; label: string }[] = [
-  { value: "End-to-end", label: "Research to production delivery" },
-  { value: "4", label: "Core service areas" },
-  { value: "AI-first", label: "Applied AI at the core, not bolted on" },
-  { value: "Dhaka, BD", label: "Based in Bangladesh, building globally" },
-];
+/**
+ * Headline figures.
+ *
+ * The product count is derived from the catalogue rather than hardcoded, so the
+ * number on the site cannot drift away from the number of products we actually
+ * list. Every other value here is a statement of fact, not a projection.
+ */
+export function getStats(): { value: string; label: string }[] {
+  return [
+    {
+      value: `${products.length}`,
+      label: "Products built, deployed, and publicly demoable",
+    },
+    { value: "4", label: "Practice areas, from applied AI to infrastructure" },
+    { value: "End-to-end", label: "Discovery through production and support" },
+    { value: "Dhaka, BD", label: "Working with teams anywhere" },
+  ];
+}
 
 export const techStack: string[] = [
   "Python",
@@ -214,228 +229,9 @@ export const techStack: string[] = [
   "AWS",
 ];
 
-// ---------------------------------------------------------------------------
-// Products — grouped into categories. Nav dropdown lists categories; each
-// category page lists its products; each product has its own detail page with
-// a "Request a demo" action.
-// ---------------------------------------------------------------------------
-
-export type ProductStatus = "Live" | "In Development" | "Prototype";
-
-export type ProductCategory = {
-  slug: string;
-  name: string;
-  description: string;
-  icon: string;
-};
-
-export const productCategories: ProductCategory[] = [
-  {
-    slug: "ai",
-    name: "AI Products",
-    description:
-      "Applied-AI platforms — agentic systems, RAG applications, and on-device intelligence.",
-    icon: "brain",
-  },
-  {
-    slug: "business",
-    name: "Business Software",
-    description:
-      "Practical software for real operations — point-of-sale, dashboards, and internal tools.",
-    icon: "briefcase",
-  },
-  {
-    slug: "infrastructure",
-    name: "Developer Infrastructure",
-    description:
-      "High-performance building blocks — inference platforms and data systems for engineers.",
-    icon: "server",
-  },
-];
-
-/**
- * A single measurable, verifiable fact about a product.
- *
- * Rule: only put numbers here that you can actually defend if asked. An empty
- * `metrics` array renders nothing — that is the correct state until you have a
- * real number. Do not fill these with estimates or aspirations.
- */
-export type ProductMetric = { value: string; label: string };
-
-export type Product = {
-  slug: string;
-  category: string; // ProductCategory slug
-  name: string;
-  tagline: string;
-  description: string;
-  status: ProductStatus;
-  stack: string[];
-  features: string[];
-  imageQuery: string;
-  demoAvailable: boolean;
-  /** Public repo URL. Omit while the repo is private — nothing renders. */
-  repo?: string;
-  /** Live, publicly reachable demo. Omit until it actually resolves. */
-  demoUrl?: string;
-  /** Verified numbers only. See ProductMetric. */
-  metrics?: ProductMetric[];
-  /** Third-party validation (hackathon placement, etc.). Factual only. */
-  recognition?: string;
-};
-
-export const products: Product[] = [
-  // --- AI Products ---
-  {
-    slug: "nexus-agent-orchestrator",
-    category: "ai",
-    name: "Nexus Agent Orchestrator",
-    tagline: "Autonomous multi-agent platform for research and coding",
-    description:
-      "A platform that orchestrates autonomous AI agents through a plan → research → code → critique loop, with retrieval-augmented grounding over your documents. Designed to run fully offline with local models and no external API keys.",
-    status: "In Development",
-    stack: ["LangGraph", "FastAPI", "Next.js", "pgvector"],
-    features: [
-      "Multi-agent planning with safe tool use",
-      "RAG over your own document corpus",
-      "Runs fully offline with local models",
-      "Real-time agent-graph visualization",
-    ],
-    imageQuery: "artificial intelligence neural network abstract",
-    demoAvailable: true,
-  },
-  {
-    slug: "aignis",
-    category: "ai",
-    name: "AIgnis",
-    tagline: "AI-driven autonomous marketing campaign system",
-    description:
-      "An autonomous system that plans, generates, and optimizes marketing campaigns. Built for the INFINITE AI Builders hackathon, where it reached the final round in the MarTech & Branding category.",
-    status: "Prototype",
-    stack: ["LLMs", "Agentic AI", "FastAPI", "Next.js"],
-    features: [
-      "Autonomous campaign planning",
-      "AI-generated content variants",
-      "Performance-driven optimization",
-      "Brand-aware guardrails",
-    ],
-    imageQuery: "digital marketing campaign analytics",
-    demoAvailable: true,
-    recognition:
-      "Finalist — INFINITE AI Builders, MarTech & Branding category",
-  },
-  {
-    slug: "hilltrack-pulse",
-    category: "ai",
-    name: "HillTrack Pulse",
-    tagline: "Offline-first healthcare platform for rural regions",
-    description:
-      "An outbreak-detection and medical-consultation platform designed for low-connectivity rural regions of Bangladesh, combining clustering-based detection with on-device and cloud AI consultation.",
-    status: "Prototype",
-    stack: ["DBSCAN", "FastAPI", "Ollama", "React"],
-    features: [
-      "Outbreak detection via spatial clustering",
-      "On-device AI medical consultation",
-      "Offline-first, low-connectivity design",
-      "Multi-modal medical logistics",
-    ],
-    imageQuery: "healthcare technology rural clinic",
-    demoAvailable: true,
-  },
-  {
-    slug: "resonet",
-    category: "ai",
-    name: "ResoNet",
-    tagline: "On-device respiratory screening from cough audio",
-    description:
-      "A privacy-preserving respiratory-disease screening app that runs entirely on-device. Audio preprocessing and a ResNet model were reimplemented in pure Dart with ONNX Runtime, cutting the app footprint from 600 MB+ to roughly 70 MB with no loss in accuracy.",
-    status: "Prototype",
-    stack: ["ONNX", "ResNet", "Dart", "Edge AI"],
-    features: [
-      "Fully on-device inference",
-      "Pure-Dart audio preprocessing",
-      "~70 MB footprint, down from 600 MB+",
-      "Works offline for privacy",
-    ],
-    imageQuery: "mobile health app medical technology",
-    demoAvailable: false,
-    metrics: [
-      { value: "~70 MB", label: "App footprint, down from 600 MB+" },
-      { value: "100%", label: "On-device inference — no audio leaves the phone" },
-    ],
-  },
-  // --- Business Software ---
-  {
-    slug: "pos-suite",
-    category: "business",
-    name: "POS Suite",
-    tagline: "Point-of-sale software for small retail businesses",
-    description:
-      "A production point-of-sale system covering inventory, billing, and daily sales reporting for small retail shops — built and deployed end to end, from requirements gathering through support.",
-    status: "Live",
-    stack: ["Next.js", "FastAPI", "PostgreSQL"],
-    features: [
-      "Inventory and stock management",
-      "Fast billing and checkout",
-      "Daily sales and revenue reporting",
-      "Deployed for real retail operations",
-    ],
-    imageQuery: "retail point of sale checkout store",
-    demoAvailable: true,
-    // TODO(you): this one is Live, so it should carry the strongest numbers.
-    // Add what you can verify: transactions processed, shops deployed, uptime.
-    metrics: [],
-  },
-  // --- Developer Infrastructure ---
-  {
-    slug: "orionstream-ml",
-    category: "infrastructure",
-    name: "OrionStream ML",
-    tagline: "Event-driven ML inference platform",
-    description:
-      "A Kubernetes-orchestrated, event-driven inference platform with decoupled services for ingest, inference, and delivery that scale and recover independently. Built for the BUET CSE Fest hackathon finals.",
-    status: "Prototype",
-    stack: ["Kubernetes", "Kafka", "FastAPI", "Prometheus"],
-    features: [
-      "Decoupled, independently scaling services",
-      "Event-driven ingest and delivery",
-      "Fault-tolerant with automatic recovery",
-      "Metrics and monitoring built in",
-    ],
-    imageQuery: "server data center infrastructure",
-    demoAvailable: true,
-    recognition: "Finalist — BUET CSE Fest Hackathon",
-    // TODO(you): add real load-test numbers once measured, e.g.
-    // { value: "N req/s", label: "Sustained throughput at p99 < X ms" }
-    metrics: [],
-  },
-  {
-    slug: "vector-vault-db",
-    category: "infrastructure",
-    name: "Vector Vault DB",
-    tagline: "High-performance vector database",
-    description:
-      "A vector database built from scratch in C++ with HNSW/IVF approximate-nearest-neighbor indexes, AVX-512 distance kernels, and a memory-mapped snapshot format, exposed through clean Python bindings.",
-    status: "Prototype",
-    stack: ["C++17", "AVX-512", "pybind11"],
-    features: [
-      "HNSW and IVF ANN indexes",
-      "AVX-512 accelerated distance kernels",
-      "Memory-mapped snapshot format",
-      "Clean Python bindings",
-    ],
-    imageQuery: "database technology data storage abstract",
-    demoAvailable: false,
-  },
-];
-
-export function productsByCategory(categorySlug: string): Product[] {
-  return products.filter((p) => p.category === categorySlug);
-}
-
 export const contact = {
   email: "hello@somokolonlabs.com",
   phone: "+880 1700-942829",
-  github: "https://github.com/Somokolon-Labs",
   linkedin: "https://www.linkedin.com/in/shahriar-ahmed-seam/",
   location: "Dhaka, Bangladesh",
 };
@@ -451,18 +247,16 @@ export const company = {
   founder: "Shahriar Ahmed Seam",
   city: "Dhaka",
   country: "Bangladesh",
-  githubOrg: "Somokolon-Labs",
-  // TODO(you): set this to a real mailbox before launch (Cloudflare Email
-  // Routing or Zoho both work) — it is published on the site.
+  // TODO(you): set this to a real mailbox before launch — it is published in
+  // SECURITY.md and on the privacy page.
   securityEmail: "security@somokolonlabs.com",
 };
 
 export const nav: { href: string; label: string }[] = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
   { href: "/services", label: "Services" },
   { href: "/products", label: "Products" },
-  { href: "/open-source", label: "Open source" },
+  { href: "/about", label: "About" },
   { href: "/insights", label: "Insights" },
   { href: "/contact", label: "Contact" },
 ];
@@ -508,7 +302,7 @@ export const capabilityGroups: CapabilityGroup[] = [
     description:
       "Typed, documented services built to be called by something other than a demo script.",
     icon: "server",
-    items: ["FastAPI", "Python", "Node.js", "TypeScript", "gRPC", "REST", "WebSockets"],
+    items: ["FastAPI", "Python", "Node.js", "TypeScript", "Go", "gRPC", "WebSockets"],
   },
   {
     name: "Frontend",
@@ -535,68 +329,8 @@ export const capabilityGroups: CapabilityGroup[] = [
   },
   {
     name: "Quality & evaluation",
-    description:
-      "Tests for the software, evals for the models. Both run in CI.",
+    description: "Tests for the software, evals for the models. Both run in CI.",
     icon: "shield",
     items: ["pytest", "Playwright", "ESLint", "RAGAS-style evals", "Load testing"],
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Open source — what the GitHub organization actually contains.
-// Keep this list honest: every entry should be a repo someone can open.
-// ---------------------------------------------------------------------------
-
-export type Repo = {
-  name: string;
-  description: string;
-  language: string;
-  url: string;
-  /** Set false for repos that are not public yet — renders as "Coming soon". */
-  isPublic: boolean;
-};
-
-export const openSourceRepos: Repo[] = [
-  {
-    name: "somokolonlabs.com",
-    description:
-      "This website. Next.js App Router, Tailwind v4, statically rendered, deployed on Vercel with CI on every push.",
-    language: "TypeScript",
-    url: `https://github.com/${company.githubOrg}/somokolonlabs.com`,
-    isPublic: true,
-  },
-  // TODO(you): flip `isPublic` to true as each repo lands in the org, and
-  // correct the URL slug to match the real repo name.
-  {
-    name: "nexus-agent-orchestrator",
-    description:
-      "Multi-agent orchestration platform — plan, research, code, critique loop with RAG grounding and local-model support.",
-    language: "Python",
-    url: `https://github.com/${company.githubOrg}/nexus-agent-orchestrator`,
-    isPublic: false,
-  },
-  {
-    name: "orionstream-ml",
-    description:
-      "Event-driven ML inference platform with decoupled ingest, inference, and delivery services on Kubernetes.",
-    language: "Python",
-    url: `https://github.com/${company.githubOrg}/orionstream-ml`,
-    isPublic: false,
-  },
-  {
-    name: "vector-vault-db",
-    description:
-      "Vector database written from scratch in C++17 — HNSW and IVF indexes, AVX-512 distance kernels, Python bindings.",
-    language: "C++",
-    url: `https://github.com/${company.githubOrg}/vector-vault-db`,
-    isPublic: false,
-  },
-  {
-    name: "resonet",
-    description:
-      "On-device respiratory screening from cough audio. Audio pipeline reimplemented in pure Dart over ONNX Runtime.",
-    language: "Dart",
-    url: `https://github.com/${company.githubOrg}/resonet`,
-    isPublic: false,
   },
 ];

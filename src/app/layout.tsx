@@ -93,7 +93,7 @@ const organizationJsonLd = {
     addressLocality: company.city,
     addressCountry: "BD",
   },
-  sameAs: [contact.github, contact.linkedin],
+  sameAs: [contact.linkedin],
   knowsAbout: [
     "Large language models",
     "Retrieval-augmented generation",

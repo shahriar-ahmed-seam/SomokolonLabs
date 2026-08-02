@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { contact } from "@/lib/content";
 import { Reveal } from "@/components/Reveal";
-import { GithubIcon, LinkedinIcon } from "@/components/icons/BrandIcons";
+import { LinkedinIcon } from "@/components/icons/BrandIcons";
 import ContactForm from "@/components/ContactForm";
 
 export const metadata: Metadata = {
@@ -84,17 +84,8 @@ export default async function ContactPage({
             </div>
 
             <div className="mt-10">
-              <p className="text-xs font-semibold uppercase tracking-wider text-ink-soft">Follow us</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ink-soft">Connect</p>
               <div className="mt-4 flex gap-3">
-                <a
-                  href={contact.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="GitHub"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-ink transition-colors hover:border-accent hover:text-accent"
-                >
-                  <GithubIcon size={18} />
-                </a>
                 <a
                   href={contact.linkedin}
                   target="_blank"

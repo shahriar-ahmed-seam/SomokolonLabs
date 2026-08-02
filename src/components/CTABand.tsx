@@ -15,12 +15,14 @@ export default function CTABand() {
               Tell us what you&apos;re building. We&apos;ll help you scope it, build it, and ship it.
             </p>
           </div>
+          {/* Label differs from the header CTA on purpose — the same words
+              three times on one page reads like a template. */}
           <Link
             href="/contact"
             className="inline-flex shrink-0 items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
           >
-            Start a project
-            <ArrowRight size={16} />
+            Get in touch
+            <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </Reveal>
       </div>

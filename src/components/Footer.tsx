@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { contact, services, company, productCategories } from "@/lib/content";
-import { GithubIcon, LinkedinIcon } from "@/components/icons/BrandIcons";
+import { LinkedinIcon } from "@/components/icons/BrandIcons";
 import { Mail, Phone, MapPin } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
 
@@ -8,7 +8,6 @@ const companyLinks = [
   { href: "/about", label: "About" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/insights", label: "Insights" },
-  { href: "/open-source", label: "Open source" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -31,35 +30,15 @@ export default function Footer() {
             </p>
             <div className="mt-6 flex gap-3">
               <a
-                href={contact.github}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`${company.name} on GitHub`}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <GithubIcon size={18} />
-              </a>
-              <a
                 href={contact.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`${company.founder} on LinkedIn`}
+                aria-label={`${company.name} on LinkedIn`}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 <LinkedinIcon size={18} />
               </a>
             </div>
-            <p className="mt-6 text-xs leading-relaxed text-white/40">
-              Open source on GitHub as{" "}
-              <a
-                href={contact.github}
-                target="_blank"
-                rel="noreferrer"
-                className="font-medium text-white/60 underline decoration-white/20 underline-offset-2 hover:text-white"
-              >
-                {company.githubOrg}
-              </a>
-            </p>
           </div>
 
           {/* Services */}

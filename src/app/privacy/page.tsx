@@ -73,14 +73,7 @@ export default function PrivacyPage() {
       <p>
         The site is served over HTTPS. Form submissions are transmitted
         encrypted. To report a security issue, please see our{" "}
-        <a
-          href={`https://github.com/${company.githubOrg}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub organization
-        </a>{" "}
-        or email <a href={`mailto:${company.securityEmail}`}>{company.securityEmail}</a>.
+        <a href={`mailto:${company.securityEmail}`}>{company.securityEmail}</a>.
       </p>
 
       <h2>Changes</h2>

@@ -1,24 +1,27 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import {
   differentiators,
   engagement,
   services,
-  stats,
+  getStats,
   techStack,
-  contact,
-  company,
+  featuredProducts,
+  products,
 } from "@/lib/content";
 import { sortedPosts, formatDate } from "@/lib/insights";
-import { getUnsplashPhoto } from "@/lib/unsplash";
 import { Reveal } from "@/components/Reveal";
 import { Icon } from "@/components/icons/Icon";
 import CTABand from "@/components/CTABand";
 
-export default async function Home() {
-  const heroPhoto = await getUnsplashPhoto("software engineering team office modern");
-  const latestPosts = sortedPosts().slice(0, 3);
+export default function Home() {
+  const latestPosts = sortedPosts().slice(0, 2);
+  const featured = featuredProducts();
+  const stats = getStats();
+
+  // Hero visual is one of our own products, not stock photography.
+  const heroProduct = products.find((p) => p.slug === "coregrid");
 
   return (
     <>
@@ -44,13 +47,19 @@ export default async function Home() {
               </p>
             </Reveal>
             <Reveal delay={0.15}>
+              {/*
+                The header already carries "Start a project", and so does the
+                closing band. The hero sends people to the evidence instead —
+                for a studio with working products, that converts better than a
+                third identical button.
+              */}
               <div className="mt-9 flex flex-wrap gap-4">
                 <Link
-                  href="/contact"
+                  href="/products"
                   className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
                 >
-                  Start a project
-                  <ArrowRight size={16} />
+                  See what we&apos;ve built
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Link>
                 <Link
                   href="/services"
@@ -63,20 +72,33 @@ export default async function Home() {
           </div>
 
           <Reveal delay={0.1} className="flex items-center">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-background-soft">
-              {heroPhoto.url ? (
-                <Image
-                  src={heroPhoto.url}
-                  alt={heroPhoto.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 560px"
-                  priority
-                />
-              ) : (
-                <div className="h-full w-full bg-gradient-to-br from-ink/5 to-accent/10" />
+            <figure className="w-full">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-background-soft shadow-[0_24px_60px_-30px_rgba(11,21,36,0.4)]">
+                {heroProduct?.screenshot ? (
+                  <Image
+                    src={heroProduct.screenshot}
+                    alt={`${heroProduct.name} — ${heroProduct.tagline}`}
+                    fill
+                    className="object-cover object-top"
+                    sizes="(max-width: 1024px) 100vw, 640px"
+                    priority
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-ink/5 to-accent/10" />
+                )}
+              </div>
+              {heroProduct && (
+                <figcaption className="mt-3 text-xs text-ink-soft">
+                  <Link
+                    href={`/products/${heroProduct.category}/${heroProduct.slug}`}
+                    className="font-semibold text-ink hover:text-accent"
+                  >
+                    {heroProduct.name}
+                  </Link>{" "}
+                  — {heroProduct.tagline}
+                </figcaption>
               )}
-            </div>
+            </figure>
           </Reveal>
         </div>
       </section>
@@ -121,6 +143,81 @@ export default async function Home() {
               </Link>
             </Reveal>
           ))}
+        </div>
+      </section>
+
+      {/*
+        Featured work. Every card is a real interface we shipped, screenshotted
+        from the running deployment, and every one links to something a visitor
+        can open. This is the section that makes the rest of the page credible.
+      */}
+      <section className="border-t border-border bg-ink">
+        <div className="mx-auto max-w-7xl px-6 py-24">
+          <Reveal>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">
+              Selected work
+            </p>
+            <div className="mt-3 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Products we designed, built, and put in front of users
+              </h2>
+              <Link
+                href="/products"
+                className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-white hover:text-accent"
+              >
+                All {products.length} products
+                <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+            </div>
+          </Reveal>
+
+          <ul className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((product, i) => (
+              <Reveal key={product.slug} delay={i * 0.04}>
+                <li className="h-full">
+                  <Link
+                    href={`/products/${product.category}/${product.slug}`}
+                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-accent/50"
+                  >
+                    <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-white/10 bg-ink">
+                      {product.screenshot ? (
+                        <Image
+                          src={product.screenshot}
+                          alt={`${product.name} interface`}
+                          fill
+                          className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-white/[0.04] text-sm text-white/40">
+                          {product.name}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="text-lg font-bold tracking-tight text-white group-hover:text-accent">
+                        {product.name}
+                      </h3>
+                      <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">
+                        {product.tagline}
+                      </p>
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {product.stack.slice(0, 3).map((tech) => (
+                          <span
+                            key={tech}
+                            className="rounded-md border border-white/10 px-2 py-0.5 text-[11px] font-medium text-white/50"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              </Reveal>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -175,36 +272,25 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Insights + open source — evidence, not claims */}
+      {/* Insights — short, then out of the way */}
       <section className="border-t border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+        <div className="mx-auto max-w-7xl px-6 py-20">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
             <Reveal>
-              <p className="eyebrow">Proof of work</p>
+              <p className="eyebrow">Engineering notes</p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-                Read the notes. Read the code.
+                How we think about the work
               </h2>
               <p className="mt-4 leading-relaxed text-ink-soft">
-                We write up what we build and publish what we can. Both are
-                open to anyone who wants to check our work.
+                Write-ups from systems we&apos;ve actually shipped — the
+                decisions, the trade-offs, and the numbers that came out.
               </p>
-              <div className="mt-8 flex flex-col items-start gap-3">
-                <Link
-                  href="/insights"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
-                >
-                  All engineering notes <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-                <a
-                  href={contact.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:text-accent"
-                >
-                  {company.githubOrg} on GitHub
-                  <ArrowUpRight size={15} aria-hidden="true" />
-                </a>
-              </div>
+              <Link
+                href="/insights"
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
+              >
+                Read all notes <ArrowRight size={15} aria-hidden="true" />
+              </Link>
             </Reveal>
 
             <ul className="flex flex-col gap-4 lg:col-span-2">

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { differentiators, engagement, stats } from "@/lib/content";
+import { differentiators, engagement, getStats } from "@/lib/content";
 import { getUnsplashPhoto } from "@/lib/unsplash";
 import { Reveal } from "@/components/Reveal";
 import { Icon } from "@/components/icons/Icon";
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const photo = await getUnsplashPhoto("modern software development workspace");
+  const stats = getStats();
 
   return (
     <>
