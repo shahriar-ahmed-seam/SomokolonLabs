@@ -62,7 +62,7 @@ jobs:
 
       - name: Open or update an issue on failure
         if: steps.health.outputs.exit_code != '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -118,7 +118,7 @@ jobs:
 
       - name: Close the issue once everything is healthy
         if: steps.health.outputs.exit_code == '0'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const existing = await github.rest.issues.listForRepo({
