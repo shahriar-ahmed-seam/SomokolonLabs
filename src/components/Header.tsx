@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { services, productCategories } from "@/lib/content";
 import { Icon } from "@/components/icons/Icon";
-import LogoMark from "@/components/LogoMark";
+import Logo from "@/components/Logo";
 
 type OpenMenu = "services" | "products" | null;
 
@@ -16,6 +16,11 @@ const simpleLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+/**
+ * Every page opens on a full-bleed dark hero, so the header always floats:
+ * transparent at the top, dark glass once the page scrolls. "Start a project"
+ * appears here and nowhere else above the fold.
+ */
 export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -39,23 +44,29 @@ export default function Header() {
     setOpenMenu(null);
   }
 
-  // Escape closes the open dropdown — expected behaviour for a disclosure menu.
+  // Escape closes the open dropdown or the mobile menu.
   useEffect(() => {
-    if (!openMenu) return;
+    if (!openMenu && !mobileOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenMenu(null);
+      if (e.key !== "Escape") return;
+      setOpenMenu(null);
+      setMobileOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [openMenu]);
+  }, [openMenu, mobileOpen]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
-  const linkClass = (href: string) =>
-    `text-sm font-medium transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-      isActive(href) ? "text-accent" : "text-ink-soft"
+  // Active item: full white plus a thin accent rule under the label.
+  const navClass = (active: boolean) =>
+    `relative text-sm font-medium transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white ${
+      active
+        ? "text-white after:absolute after:-bottom-1.5 after:left-0 after:h-px after:w-full after:bg-accent"
+        : "text-white/70"
     }`;
+  const linkClass = (href: string) => navClass(isActive(href));
 
   /** Close the dropdown once focus leaves the whole nav region. */
   const handleNavBlur = (e: React.FocusEvent<HTMLElement>) => {
@@ -66,153 +77,102 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 bg-background/95 backdrop-blur transition-shadow ${
-        scrolled
-          ? "shadow-[0_1px_0_0_var(--border),0_8px_24px_-16px_rgba(11,21,36,0.15)]"
-          : "border-b border-border"
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
+        scrolled || mobileOpen
+          ? "bg-ink/90 shadow-[0_1px_0_0_rgba(255,255,255,0.08)] backdrop-blur-xl"
+          : "bg-transparent"
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          aria-label="Somokolon Labs — home"
+          aria-label="Somokolon Labs, home"
+          className="rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
         >
-          <LogoMark className="h-8 w-auto" />
-          <span className="text-[17px] font-bold tracking-tight text-ink">
-            Somokolon<span className="text-accent"> Labs</span>
-          </span>
+          <Logo onDark />
         </Link>
 
         {/* Desktop nav */}
-        <nav
-          aria-label="Main"
-          className="hidden items-center gap-6 lg:flex"
-          onBlur={handleNavBlur}
-        >
-          {/* Services */}
-          <div
-            className="relative"
-            onMouseEnter={() => setOpenMenu("services")}
-            onMouseLeave={() => setOpenMenu(null)}
+        <nav aria-label="Main" className="hidden items-center gap-7 lg:flex" onBlur={handleNavBlur}>
+          <Dropdown
+            id="services"
+            label="Services"
+            open={openMenu === "services"}
+            onOpen={(v) => setOpenMenu(v ? "services" : null)}
+            className={navClass(isActive("/services") || isActive("/capabilities"))}
           >
-            <button
-              type="button"
-              aria-expanded={openMenu === "services"}
-              aria-controls="menu-services"
-              onClick={() =>
-                setOpenMenu((v) => (v === "services" ? null : "services"))
-              }
-              className={`flex items-center gap-1 ${linkClass("/services")}`}
-            >
-              Services
-              <ChevronDown
-                size={15}
-                aria-hidden="true"
-                className={`transition-transform ${
-                  openMenu === "services" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {openMenu === "services" && (
-              <div
-                id="menu-services"
-                className="absolute left-1/2 top-full w-72 -translate-x-1/2 pt-3"
-              >
-                <ul className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_20px_50px_-20px_rgba(11,21,36,0.25)]">
-                  <li>
-                    <Link
-                      href="/services"
-                      className="block border-b border-border bg-background-soft px-4 py-3 text-sm font-semibold text-accent hover:bg-background-soft/70"
-                    >
-                      All services
-                    </Link>
-                  </li>
-                  {services.map((s) => (
-                    <li key={s.slug}>
-                      <Link
-                        href={`/services/${s.slug}`}
-                        className="block border-b border-border px-4 py-3 text-sm font-semibold text-ink last:border-0 hover:bg-background-soft"
-                      >
-                        {s.name}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/capabilities"
-                      className="block border-t border-border px-4 py-3 text-sm font-medium text-ink-soft hover:bg-background-soft"
-                    >
-                      Capabilities &amp; tech stack
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
+            <ul className="w-80 overflow-hidden bg-white p-2 shadow-[0_30px_70px_-25px_rgba(11,21,36,0.45)] ring-1 ring-black/5">
+              {services.map((s) => (
+                <li key={s.slug}>
+                  <Link
+                    href={`/services/${s.slug}`}
+                    className="flex gap-3 px-3 py-3 hover:bg-background-soft"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-ink text-white">
+                      <Icon name={s.slug} size={17} />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-ink">{s.name}</span>
+                      <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-soft">
+                        {s.short}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+              <li className="mt-1 flex border-t border-border pt-1">
+                <Link
+                  href="/services"
+                  className="flex-1 px-3 py-2.5 text-sm font-semibold text-ink hover:bg-background-soft"
+                >
+                  All services
+                </Link>
+                <Link
+                  href="/capabilities"
+                  className="flex-1 px-3 py-2.5 text-sm font-medium text-ink-soft hover:bg-background-soft hover:text-ink"
+                >
+                  Tech stack
+                </Link>
+              </li>
+            </ul>
+          </Dropdown>
 
-          {/* Products */}
-          <div
-            className="relative"
-            onMouseEnter={() => setOpenMenu("products")}
-            onMouseLeave={() => setOpenMenu(null)}
+          <Dropdown
+            id="products"
+            label="Products"
+            open={openMenu === "products"}
+            onOpen={(v) => setOpenMenu(v ? "products" : null)}
+            className={navClass(isActive("/products"))}
           >
-            <button
-              type="button"
-              aria-expanded={openMenu === "products"}
-              aria-controls="menu-products"
-              onClick={() =>
-                setOpenMenu((v) => (v === "products" ? null : "products"))
-              }
-              className={`flex items-center gap-1 ${linkClass("/products")}`}
-            >
-              Products
-              <ChevronDown
-                size={15}
-                aria-hidden="true"
-                className={`transition-transform ${
-                  openMenu === "products" ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-            {openMenu === "products" && (
-              <div
-                id="menu-products"
-                className="absolute left-1/2 top-full w-[360px] -translate-x-1/2 pt-3"
-              >
-                <ul className="overflow-hidden rounded-xl border border-border bg-white p-2 shadow-[0_20px_50px_-20px_rgba(11,21,36,0.25)]">
-                  {productCategories.map((c) => (
-                    <li key={c.slug}>
-                      <Link
-                        href={`/products/${c.slug}`}
-                        className="flex gap-3 rounded-lg px-3 py-3 hover:bg-background-soft"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
-                          <Icon name={c.icon} size={18} />
-                        </span>
-                        <span>
-                          <span className="block text-sm font-semibold text-ink">
-                            {c.name}
-                          </span>
-                          <span className="mt-0.5 block text-xs leading-snug text-ink-soft">
-                            {c.description}
-                          </span>
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/products"
-                      className="mt-1 block rounded-lg px-3 py-2.5 text-sm font-semibold text-accent hover:bg-background-soft"
-                    >
-                      All products
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
+            <ul className="w-[22rem] overflow-hidden bg-white p-2 shadow-[0_30px_70px_-25px_rgba(11,21,36,0.45)] ring-1 ring-black/5">
+              {productCategories.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/products/${c.slug}`}
+                    className="flex gap-3 px-3 py-3 hover:bg-background-soft"
+                  >
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center bg-accent/10 text-accent">
+                      <Icon name={c.icon} size={17} />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-ink">{c.name}</span>
+                      <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-ink-soft">
+                        {c.description}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+              <li className="mt-1 border-t border-border pt-1">
+                <Link
+                  href="/products"
+                  className="block px-3 py-2.5 text-sm font-semibold text-ink hover:bg-background-soft"
+                >
+                  All products
+                </Link>
+              </li>
+            </ul>
+          </Dropdown>
 
           {simpleLinks.map((item) => (
             <Link
@@ -227,9 +187,14 @@ export default function Header() {
 
           <Link
             href="/contact"
-            className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            className="group inline-flex items-center gap-1.5 rounded-md bg-accent py-2.5 pl-5 pr-4 text-sm font-semibold text-white shadow-[0_10px_30px_-10px_rgba(217,45,32,0.8)] transition-colors hover:bg-accent-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Start a project
+            <ArrowUpRight
+              size={15}
+              aria-hidden="true"
+              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
           </Link>
         </nav>
 
@@ -240,13 +205,9 @@ export default function Header() {
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
           onClick={() => setMobileOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-border text-ink lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-md border border-white/20 text-white lg:hidden"
         >
-          {mobileOpen ? (
-            <X size={18} aria-hidden="true" />
-          ) : (
-            <Menu size={18} aria-hidden="true" />
-          )}
+          {mobileOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
         </button>
       </div>
 
@@ -255,75 +216,105 @@ export default function Header() {
         <nav
           id="mobile-nav"
           aria-label="Main"
-          className="border-t border-border bg-white px-6 py-4 lg:hidden"
+          className="max-h-[calc(100svh-4.5rem)] overflow-y-auto border-t border-white/10 px-6 pb-8 pt-4 lg:hidden"
         >
-          <Link href="/" className="block py-2.5 text-sm font-medium text-ink">
-            Home
-          </Link>
+          <MobileGroup label="Services">
+            {services.map((s) => (
+              <MobileLink key={s.slug} href={`/services/${s.slug}`}>
+                {s.name}
+              </MobileLink>
+            ))}
+            <MobileLink href="/capabilities">Tech stack</MobileLink>
+          </MobileGroup>
 
-          <p className="pt-3 text-xs font-semibold uppercase tracking-wider text-ink-soft">
-            Services
-          </p>
-          <Link
-            href="/services"
-            className="block py-2 pl-3 text-sm font-medium text-accent"
-          >
-            All services
-          </Link>
-          {services.map((s) => (
-            <Link
-              key={s.slug}
-              href={`/services/${s.slug}`}
-              className="block py-2 pl-3 text-sm text-ink-soft"
-            >
-              {s.name}
-            </Link>
-          ))}
-          <Link
-            href="/capabilities"
-            className="block py-2 pl-3 text-sm text-ink-soft"
-          >
-            Capabilities &amp; tech stack
-          </Link>
+          <MobileGroup label="Products">
+            {productCategories.map((c) => (
+              <MobileLink key={c.slug} href={`/products/${c.slug}`}>
+                {c.name}
+              </MobileLink>
+            ))}
+            <MobileLink href="/products">All products</MobileLink>
+          </MobileGroup>
 
-          <p className="pt-3 text-xs font-semibold uppercase tracking-wider text-ink-soft">
-            Products
-          </p>
-          <Link
-            href="/products"
-            className="block py-2 pl-3 text-sm font-medium text-accent"
-          >
-            All products
-          </Link>
-          {productCategories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/products/${c.slug}`}
-              className="block py-2 pl-3 text-sm text-ink-soft"
-            >
-              {c.name}
-            </Link>
-          ))}
-
-          {simpleLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className="mt-1 block py-2.5 text-sm font-medium text-ink"
-            >
-              {item.label}
-            </Link>
-          ))}
+          <div className="mt-4 border-t border-white/10 pt-2">
+            {simpleLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className="font-display block py-3 text-2xl font-semibold tracking-[-0.02em] text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
 
           <Link
             href="/contact"
-            className="mt-3 block rounded-full bg-accent px-5 py-2.5 text-center text-sm font-semibold text-white"
+            className="mt-6 flex items-center justify-center gap-2 rounded-md bg-accent px-5 py-3.5 text-sm font-semibold text-white"
           >
             Start a project
+            <ArrowUpRight size={15} aria-hidden="true" />
           </Link>
         </nav>
       )}
     </header>
+  );
+}
+
+function Dropdown({
+  id,
+  label,
+  open,
+  onOpen,
+  className,
+  children,
+}: {
+  id: string;
+  label: string;
+  open: boolean;
+  onOpen: (open: boolean) => void;
+  className: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative" onMouseEnter={() => onOpen(true)} onMouseLeave={() => onOpen(false)}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={`menu-${id}`}
+        onClick={() => onOpen(!open)}
+        className={`flex items-center gap-1 ${className}`}
+      >
+        {label}
+        <ChevronDown
+          size={15}
+          aria-hidden="true"
+          className={`transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div id={`menu-${id}`} className="absolute left-1/2 top-full -translate-x-1/2 pt-4">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MobileGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="py-3">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">{label}</p>
+      <div className="mt-2">{children}</div>
+    </div>
+  );
+}
+
+function MobileLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="block py-2 text-[15px] text-white/80 hover:text-white">
+      {children}
+    </Link>
   );
 }

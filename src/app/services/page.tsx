@@ -1,97 +1,123 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
-import { services, engagement } from "@/lib/content";
-import { Reveal } from "@/components/Reveal";
+import { ArrowUpRight } from "lucide-react";
+import { services, engagement, contact } from "@/lib/content";
 import { Icon } from "@/components/icons/Icon";
-import CTABand from "@/components/CTABand";
+import PageHero from "@/components/site/PageHero";
+import SectionIntro from "@/components/site/SectionIntro";
+import Steps from "@/components/site/Steps";
+import FinalCTA from "@/components/site/FinalCTA";
+import OfferingIcon from "@/components/site/OfferingIcon";
+import { FadeIn } from "@/components/site/motion";
+import styles from "@/components/site/site.module.css";
 
 export const metadata: Metadata = {
   title: "Services",
   description:
     "AI & LLM engineering, web and full-stack development, cloud & MLOps, and quality assurance from Somokolon Labs.",
+  alternates: { canonical: "/services" },
 };
 
 export default function ServicesPage() {
   return (
     <>
-      {/* Page header */}
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <Reveal>
-            <p className="eyebrow">Our Services</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-              Software teams that grow with you
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              We work as an extension of your team — from front-end to backend,
-              data, and infrastructure — building software vital to your
-              organization across AI, web, and cloud.
-            </p>
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Services"
+        title="Four practices."
+        accent="One team that ships."
+        scene="plan"
+        lead="We work as an extension of your team, from the model to the interface to the infrastructure underneath. The people who scope the work are the people who build it."
+      >
+        <ul className="flex flex-wrap gap-2">
+          {services.map((s, i) => (
+            <li key={s.slug}>
+              <a
+                href={`#${s.slug}`}
+                className="inline-flex items-center gap-2 border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 backdrop-blur transition-colors hover:border-white/40 hover:text-white"
+              >
+                <span className="text-xs text-white/40">0{i + 1}</span>
+                {s.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </PageHero>
 
-      {/* Service list */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex flex-col gap-16">
-          {services.map((service, i) => (
-            <Reveal key={service.slug} delay={i * 0.03}>
-              <div className="grid grid-cols-1 gap-8 border-b border-border pb-16 last:border-0 last:pb-0 lg:grid-cols-12">
-                <div className="lg:col-span-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                    <Icon name={service.slug} />
+      {/* One band per practice: sticky summary on the left, offerings on the right. */}
+      <div className="bg-background">
+        {services.map((service, i) => (
+          <section
+            key={service.slug}
+            id={service.slug}
+            aria-labelledby={`${service.slug}-title`}
+            className={`scroll-mt-20 ${i % 2 === 1 ? "bg-background-soft" : "bg-background"}`}
+          >
+            <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 md:py-32 lg:grid-cols-12">
+              {/* The grid cell is the sticky track; the reveal sits inside it. */}
+              <div className="lg:col-span-5">
+                <FadeIn className="lg:sticky lg:top-28">
+                  <div className="flex items-center gap-4">
+                    <span className="flex h-12 w-12 items-center justify-center bg-ink text-white">
+                      <Icon name={service.slug} size={22} />
+                    </span>
+                    <span className={`${styles.display} text-sm font-semibold text-ink-soft`}>
+                      0{i + 1} / 0{services.length}
+                    </span>
                   </div>
-                  <h2 className="mt-5 text-2xl font-bold tracking-tight text-ink">{service.name}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">{service.summary}</p>
+                  <h2
+                    id={`${service.slug}-title`}
+                    className={`${styles.display} mt-8 text-4xl font-semibold leading-[1.05] tracking-[-0.04em] text-ink sm:text-5xl`}
+                  >
+                    {service.name}
+                  </h2>
+                  <p className="mt-6 max-w-md text-base leading-relaxed text-ink-soft">
+                    {service.summary}
+                  </p>
                   <Link
                     href={`/services/${service.slug}`}
-                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
+                    className="group mt-8 inline-flex items-center gap-3 rounded-md bg-ink py-3 pl-6 pr-3 text-sm font-semibold text-white transition-colors hover:bg-accent"
                   >
-                    View details <ArrowRight size={15} />
+                    Explore {service.name}
+                    <span className="flex h-7 w-7 items-center justify-center rounded-sm bg-white/15">
+                      <ArrowUpRight size={14} aria-hidden="true" className="transition-transform group-hover:rotate-45" />
+                    </span>
                   </Link>
-                </div>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-8">
-                  {service.offerings.map((o) => (
-                    <div key={o.title} className="rounded-xl border border-border bg-white p-6">
-                      <h3 className="font-semibold text-ink">{o.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{o.description}</p>
-                    </div>
-                  ))}
-                </div>
+                </FadeIn>
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
 
-      {/* Engagement model */}
-      <section className="border-y border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <Reveal>
-            <p className="eyebrow">Engagement model</p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-              Flexible, transparent, and built around your goals
-            </h2>
-            <p className="mt-4 max-w-2xl text-ink-soft">
-              We adapt our engagement to fit your project — whether that&apos;s a
-              fixed-scope build or dedicated ongoing work. Either way, you get
-              clear plans, regular status updates, and code you can trust.
-            </p>
-          </Reveal>
-          <div className="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {engagement.map((step, i) => (
-              <Reveal key={step.step} delay={i * 0.05}>
-                <span className="text-sm font-bold text-accent">{step.step}</span>
-                <h3 className="mt-3 font-bold text-ink">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{step.description}</p>
-              </Reveal>
-            ))}
+              <ul className="grid gap-px overflow-hidden bg-ink/10 ring-1 ring-ink/10 sm:grid-cols-2 lg:col-span-7">
+                {service.offerings.map((o, j) => (
+                  <li key={o.title} className="bg-white">
+                    <FadeIn delay={j * 0.06} className="flex h-full flex-col p-8">
+                      <OfferingIcon title={o.title} index={i + j} />
+                      <h3 className={`${styles.display} mt-8 text-lg font-semibold tracking-[-0.02em] text-ink`}>
+                        {o.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{o.description}</p>
+                    </FadeIn>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <section className="border-t border-border bg-background">
+        <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+          <SectionIntro
+            eyebrow="Engagement model"
+            title="Fixed scope or ongoing."
+            accent="Always in the open."
+            lead="Whether it's a fixed-scope build or dedicated ongoing work, you get a clear plan, regular status updates, and code you can read."
+          />
+          <div className="mt-20">
+            <Steps steps={engagement} />
           </div>
         </div>
       </section>
 
-      <CTABand />
+      <FinalCTA email={contact.email} />
     </>
   );
 }

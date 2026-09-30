@@ -1,0 +1,275 @@
+/*
+  Site motion & texture layer.
+  Colours are the existing brand tokens (ink #0b1524, accent #d92d20) plus
+  tints of them; nothing new is introduced to the palette.
+  Font variables are set on <html> in app/layout.tsx.
+*/
+
+/* ---------------------------------------------------------------- Type */
+.display {
+  font-family: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
+}
+
+.serif {
+  font-family: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+/* Warm gradient built from the accent, for display words on dark grounds. */
+.accentText {
+  background-image: linear-gradient(100deg, #ff8a7a 0%, #f04438 45%, #d92d20 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Italic serifs overhang their box; keep the last glyph unclipped. */
+  padding-right: 0.12em;
+  margin-right: -0.12em;
+}
+
+/* ------------------------------------------------------------- Backdrops */
+.gridLines {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, #000 25%, transparent 100%);
+}
+
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.blobRed {
+  width: 44rem;
+  height: 44rem;
+  left: -14rem;
+  top: -16rem;
+  background: radial-gradient(circle, rgba(217, 45, 32, 0.5), transparent 65%);
+  animation: driftA 18s ease-in-out infinite alternate;
+}
+
+.blobCenter {
+  width: 52rem;
+  height: 30rem;
+  left: 50%;
+  bottom: -14rem;
+  margin-left: -26rem;
+  background: radial-gradient(ellipse, rgba(217, 45, 32, 0.42), transparent 65%);
+  animation: pulse 9s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+  to {
+    transform: translate3d(9rem, 6rem, 0) scale(1.15);
+  }
+}
+
+@keyframes pulse {
+  to {
+    transform: scale(1.18);
+    opacity: 0.75;
+  }
+}
+
+/* Follows the pointer via --mx / --my, set from JS without re-rendering. */
+.pointerGlow {
+  background: radial-gradient(
+    560px circle at var(--mx, 50%) var(--my, 30%),
+    rgba(217, 45, 32, 0.16),
+    transparent 60%
+  );
+}
+
+.grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------ Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .blobRed,
+  .blobCenter {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ Scenes
+   Gradient-and-line stand-ins for the AI video clips. Each scene is a
+   different composition of the same world (ink field, navy lift, red light)
+   so the process section reads as one film cutting between shots. When a
+   real clip is supplied, <Scene> renders a <video> instead of these. */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--ink);
+}
+
+/* Footage and its poster. On portrait screens (same query as the portrait
+   <source>s in Scene.tsx) a wide clip crops around its subject, not the
+   centre. --focus-x is only set for clips without a portrait cut. */
+.sceneMedia {
+  object-position: 50% 50%;
+}
+
+@media (max-aspect-ratio: 3/4) {
+  .sceneMedia {
+    object-position: var(--focus-x, 50%) 50%;
+  }
+}
+
+.sceneFlow {
+  background:
+    radial-gradient(ellipse 60% 55% at 78% 42%, rgba(58, 98, 170, 0.45), transparent 70%),
+    radial-gradient(ellipse 45% 50% at 12% 88%, rgba(217, 45, 32, 0.38), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(24, 40, 70, 0.9), transparent 75%),
+    var(--ink);
+}
+
+.sceneProcess {
+  background:
+    radial-gradient(ellipse 40% 40% at 86% 28%, rgba(217, 45, 32, 0.24), transparent 70%),
+    radial-gradient(ellipse 65% 60% at 64% 62%, rgba(58, 98, 170, 0.36), transparent 72%),
+    var(--ink);
+}
+
+.sceneDiscover {
+  background:
+    radial-gradient(ellipse 55% 50% at 25% 30%, rgba(217, 45, 32, 0.32), transparent 70%),
+    radial-gradient(ellipse 60% 60% at 80% 75%, rgba(58, 98, 170, 0.35), transparent 70%),
+    var(--ink);
+}
+
+.scenePlan {
+  background:
+    linear-gradient(to right, rgba(120, 160, 230, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(120, 160, 230, 0.09) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(40, 70, 130, 0.55), transparent 75%),
+    var(--ink);
+  background-size: 48px 48px, 48px 48px, auto, auto;
+}
+
+.sceneBuild {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 100%, rgba(217, 45, 32, 0.4), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 70% 20%, rgba(58, 98, 170, 0.3), transparent 70%),
+    var(--ink);
+}
+
+.sceneRun {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(217, 45, 32, 0.28), transparent 45%),
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(58, 98, 170, 0.3), transparent 75%),
+    var(--ink);
+}
+
+/* Slow camera drift on the whole composition. */
+.drift {
+  position: absolute;
+  inset: -6%;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(-2.5%, 1.5%, 0) scale(1.06);
+  }
+}
+
+/* A short bright dash that travels the length of a path (pathLength=1000). */
+.pulseLine {
+  stroke-dasharray: 70 930;
+  animation: pulseRun var(--dur, 7s) linear var(--delay, 0s) infinite;
+}
+
+@keyframes pulseRun {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Draws a path in, holds, then fades, on a loop (pathLength=1000). */
+.drawLine {
+  stroke-dasharray: 1000;
+  animation: drawIn var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes drawIn {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  55%,
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+.twinkle {
+  animation: twinkle var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.rise {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rise var(--dur, 5s) cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) infinite;
+}
+
+@keyframes rise {
+  0% {
+    transform: scaleY(0.05);
+    opacity: 0.2;
+  }
+  45%,
+  85% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drift,
+  .pulseLine,
+  .drawLine,
+  .twinkle,
+  .rise {
+    animation: none;
+  }
+
+  /* Park the travelling pulses along their paths so the still frame has light. */
+  .pulseLine {
+    stroke-dashoffset: var(--park, 500);
+  }
+}

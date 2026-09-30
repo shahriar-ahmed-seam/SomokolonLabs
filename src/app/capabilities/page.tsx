@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { capabilityGroups, engagement } from "@/lib/content";
-import { Reveal } from "@/components/Reveal";
+import { capabilityGroups, contact, engagement, products } from "@/lib/content";
 import { Icon } from "@/components/icons/Icon";
-import CTABand from "@/components/CTABand";
+import PageHero from "@/components/site/PageHero";
+import SectionIntro from "@/components/site/SectionIntro";
+import Steps from "@/components/site/Steps";
+import FinalCTA from "@/components/site/FinalCTA";
+import { FadeIn } from "@/components/site/motion";
+import { logoFor } from "@/components/site/techLogos";
+import styles from "@/components/site/site.module.css";
 
 export const metadata: Metadata = {
   title: "Capabilities",
@@ -14,86 +17,94 @@ export const metadata: Metadata = {
 };
 
 export default function CapabilitiesPage() {
+  const tools = new Set(capabilityGroups.flatMap((g) => g.items));
+
   return (
     <>
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <Reveal>
-            <p className="eyebrow">Capabilities</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-              What we work with, and what we do with it
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              A stack list on its own proves nothing. These are the tools we
-              reach for, grouped by the problem they solve — and every one of
-              them appears somewhere in the products we&apos;ve shipped.
-            </p>
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Tech stack"
+        title="What we work with, and"
+        accent="what we do with it."
+        scene="plan"
+        lead="A stack list on its own proves nothing. These are the tools we reach for, grouped by the problem they solve, and every one of them appears somewhere in the products we've shipped."
+      >
+        <dl className="flex flex-wrap gap-x-12 gap-y-4">
+          {[
+            { value: tools.size, label: "Technologies" },
+            { value: capabilityGroups.length, label: "Areas" },
+            { value: products.length, label: "Products shipped" },
+          ].map((s) => (
+            <div key={s.label}>
+              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">{s.label}</dt>
+              <dd className="font-display mt-1 text-3xl font-semibold tracking-[-0.04em] text-white">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </PageHero>
 
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <section className="bg-background-soft">
+        <ul className="mx-auto grid max-w-7xl gap-6 px-6 py-24 md:grid-cols-2 md:py-32">
           {capabilityGroups.map((group, i) => (
-            <Reveal key={group.name} delay={i * 0.04}>
-              <div className="h-full rounded-2xl border border-border bg-white p-8">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                  <Icon name={group.icon} />
+            <li key={group.name}>
+              <FadeIn delay={(i % 2) * 0.08} className="flex h-full flex-col bg-white p-8 ring-1 ring-ink/10 sm:p-10">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center bg-ink text-white">
+                    <Icon name={group.icon} size={22} />
+                  </span>
+                  <span className={`${styles.display} text-sm font-semibold text-ink/30`}>
+                    0{i + 1}
+                  </span>
                 </div>
-                <h2 className="mt-5 text-xl font-bold tracking-tight text-ink">
+                <h2 className={`${styles.display} mt-8 text-2xl font-semibold tracking-[-0.03em] text-ink`}>
                   {group.name}
                 </h2>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  {group.description}
-                </p>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {group.items.map((item) => (
-                    <li
-                      key={item}
-                      className="rounded-full border border-border bg-background-soft px-3 py-1 text-xs font-medium text-ink-soft"
-                    >
-                      {item}
-                    </li>
-                  ))}
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{group.description}</p>
+
+                <ul className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {group.items.map((name) => {
+                    const logo = logoFor(name);
+                    return (
+                      <li
+                        key={name}
+                        className="flex items-center gap-3 bg-background-soft px-3.5 py-3 text-sm font-medium text-ink ring-1 ring-inset ring-ink/5"
+                      >
+                        {logo ? (
+                          <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" aria-hidden="true" fill={logo.hex}>
+                            <path d={logo.path} />
+                          </svg>
+                        ) : (
+                          <span className="flex h-5 w-5 shrink-0 items-center justify-center text-ink-soft">
+                            <Icon name={group.icon} size={16} />
+                          </span>
+                        )}
+                        <span className="min-w-0 leading-tight">{name}</span>
+                      </li>
+                    );
+                  })}
                 </ul>
-              </div>
-            </Reveal>
+              </FadeIn>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      {/* How the work runs — ties capability to delivery */}
-      <section className="border-y border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <Reveal>
-            <p className="eyebrow">How the work runs</p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-              Every engagement follows the same four steps
-            </h2>
-          </Reveal>
-          <div className="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {engagement.map((step, i) => (
-              <Reveal key={step.step} delay={i * 0.05}>
-                <span className="text-sm font-bold text-accent">{step.step}</span>
-                <h3 className="mt-3 font-bold text-ink">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  {step.description}
-                </p>
-              </Reveal>
-            ))}
+      <section className="border-t border-border bg-background">
+        <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+          <SectionIntro
+            eyebrow="How the work runs"
+            title="Every engagement follows"
+            accent="the same four steps."
+            link={{ href: "/services", label: "See the services we offer" }}
+          />
+          <div className="mt-20">
+            <Steps steps={engagement} />
           </div>
-          <Reveal>
-            <Link
-              href="/services"
-              className="mt-12 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
-            >
-              See the services we offer <ArrowRight size={15} />
-            </Link>
-          </Reveal>
         </div>
       </section>
 
-      <CTABand />
+      <FinalCTA email={contact.email} />
     </>
   );
 }

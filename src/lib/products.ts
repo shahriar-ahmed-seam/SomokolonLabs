@@ -75,8 +75,6 @@ export type Product = {
   screenshot?: string;
   /** Only numbers we can defend. Omit rather than estimate. */
   metrics?: ProductMetric[];
-  /** Surfaced on the home page. Keep this to roughly six. */
-  featured?: boolean;
 };
 
 // NOTE: Verity (multi-tenant document intelligence) is deliberately absent.
@@ -124,7 +122,6 @@ export const products: Product[] = [
     metrics: [
       { value: "4 agents", label: "Planner, coder, tester, reviewer in one loop" },
     ],
-    featured: true,
   },
   {
     slug: "sentinel",
@@ -144,7 +141,6 @@ export const products: Product[] = [
     ],
     demoUrl: "https://sentinel-console-xi.vercel.app",
     screenshot: "/work/sentinel.webp",
-    featured: true,
   },
   {
     slug: "autoresearch-ai",
@@ -201,7 +197,6 @@ export const products: Product[] = [
     ],
     demoUrl: "https://coregrid.vercel.app",
     screenshot: "/work/coregrid.webp",
-    featured: true,
   },
   {
     slug: "counterflow",
@@ -223,7 +218,6 @@ export const products: Product[] = [
     metrics: [
       { value: "Offline-first", label: "Trades through a network outage" },
     ],
-    featured: true,
   },
   {
     slug: "stockpilot",
@@ -317,7 +311,6 @@ export const products: Product[] = [
     ],
     demoUrl: "https://pypi.org/project/vector-vault-db/",
     metrics: [{ value: "On PyPI", label: "Installable as a published package" }],
-    featured: true,
   },
   {
     slug: "flywheel",
@@ -433,7 +426,6 @@ export const products: Product[] = [
     demoUrl: "https://kestrel-vision.vercel.app",
     screenshot: "/work/kestrel.webp",
     metrics: [{ value: "CPU only", label: "Real-time tracking without a GPU" }],
-    featured: true,
   },
   {
     slug: "leafwise",
@@ -494,11 +486,6 @@ export function demoHref(product: Product): string | undefined {
   return product.demoUrl;
 }
 
-/** True when the demo is served from our own domain rather than *.vercel.app. */
-export function isBrandedDemo(product: Product): boolean {
-  return Boolean(product.demoDomain);
-}
-
 /** The subdomain a product should get. Used by scripts/plan-demo-domains.mjs. */
 export function intendedDemoDomain(product: Product): string {
   return `${product.slug}.somokolonlabs.com`;
@@ -508,10 +495,38 @@ export function productsByCategory(categorySlug: string): Product[] {
   return products.filter((p) => p.category === categorySlug);
 }
 
-export function featuredProducts(): Product[] {
-  return products.filter((p) => p.featured);
-}
-
 export function getProduct(category: string, slug: string): Product | undefined {
   return products.find((p) => p.slug === slug && p.category === category);
 }
+
+/**
+ * Brand colours per product, sampled from each product's own interface
+ * (the dominant saturated colour in its /public/work screenshot), then
+ * darkened for `deep` and lifted for `light`.
+ *
+ *   deep  — background for a text tile; white text passes contrast on it.
+ *   light — eyebrow / link tint used on top of `deep`.
+ *
+ * Re-sample if a product's UI changes colour.
+ */
+export const productTones: Record<string, { deep: string; light: string }> = {
+  "autoresearch-ai": { deep: "#104635", light: "#89e6c9" },
+  "blast-notify": { deep: "#103346", light: "#7cc8f3" },
+  "care-connect": { deep: "#104346", light: "#8bdfe4" },
+  cartograph: { deep: "#242a32", light: "#90b1df" },
+  "code-sandbox": { deep: "#103246", light: "#8bc3e4" },
+  coregrid: { deep: "#113045", light: "#8dc0e2" },
+  counterflow: { deep: "#181046", light: "#8c7bf4" },
+  "fleet-command": { deep: "#153042", light: "#90bfdf" },
+  flywheel: { deep: "#364611", light: "#cae38d" },
+  forge: { deep: "#442313", light: "#e0aa8f" },
+  kestrel: { deep: "#433314", light: "#dfc590" },
+  kinetix: { deep: "#314512", light: "#c1e28d" },
+  kubepulse: { deep: "#103f46", light: "#8ad8e5" },
+  leafwise: { deep: "#402117", light: "#dfa490" },
+  "ledger-core": { deep: "#124537", light: "#8de2cb" },
+  lumos: { deep: "#461031", light: "#e48bc1" },
+  sentinel: { deep: "#103f46", light: "#86dce9" },
+  stockpilot: { deep: "#241542", light: "#ab90df" },
+  streammind: { deep: "#462410", light: "#e7ab89" },
+};

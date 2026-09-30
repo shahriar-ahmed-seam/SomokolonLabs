@@ -1,15 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Inter_Tight, Instrument_Serif } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ChatWidget from "@/components/ChatWidget";
+import SiteShell from "@/components/site/SiteShell";
 import { company, contact, services } from "@/lib/content";
 import { siteUrl, absoluteUrl } from "@/lib/site";
 
+// Body copy.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Headlines and display numerals.
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Italic accent words inside headlines.
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -60,9 +79,11 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  // TODO(you): paste the Google Search Console verification token here after
-  // adding the property, then redeploy.
-  // verification: { google: "..." },
+  // Google Search Console ownership tag. Set GOOGLE_SITE_VERIFICATION (the
+  // content="…" value from the "HTML tag" method) and redeploy.
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -127,8 +148,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full`}>
-      <body className="flex min-h-full flex-col">
+    <html
+      lang="en"
+      className={`${inter.variable} ${interTight.variable} ${instrumentSerif.variable} h-full`}
+    >
+      <body className="min-h-full">
         {/* Keyboard users land here first — lets them jump the nav. */}
         <a
           href="#main"
@@ -150,11 +174,14 @@ export default function RootLayout({
           }}
         />
 
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <SiteShell>
+          <Header />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+          <ChatWidget />
+        </SiteShell>
         <Analytics />
       </body>
     </html>

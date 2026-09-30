@@ -1,60 +1,43 @@
-// Somokolon Labs logo mark: < S > — angle brackets with a two-tone S.
-// Recreated as SVG so it stays crisp at any size and matches the brand palette.
-// `ink` is the dark colour (navy by default; pass white on dark backgrounds).
+// Somokolon Labs mark: "S." — a geometric S (two stacked arcs, radial cut
+// terminals) with a red full stop, on a rounded tile.
+//
+// `onDark` flips the tile to white so the mark stays a solid shape on the
+// navy header and footer; on light backgrounds the tile is navy.
+// Keep in sync with src/app/icon.svg and the OG card in src/lib/og.tsx.
+
+export const LOGO_PATHS = {
+  s: "M25.3 12.84A6.6 6.6 0 1 0 20.1 23.5A6.6 6.6 0 1 1 14.9 34.16",
+  dot: { cx: 34.1, cy: 36.2, r: 3.1 },
+  strokeWidth: 5.4,
+  radius: 12,
+} as const;
 
 export default function LogoMark({
   className,
-  ink = "#0b1524",
-  accent = "#d92d20",
+  onDark = false,
   title = "Somokolon Labs",
 }: {
   className?: string;
-  ink?: string;
-  accent?: string;
+  onDark?: boolean;
+  /** Pass "" when the mark sits next to the written name (decorative). */
   title?: string;
 }) {
+  const tile = onDark ? "#ffffff" : "#0b1524";
+  const letter = onDark ? "#0b1524" : "#ffffff";
+  const decorative = title === "";
+
   return (
     <svg
-      viewBox="0 0 200 120"
+      viewBox="0 0 48 48"
       className={className}
-      role="img"
-      aria-label={title}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      {...(decorative ? { "aria-hidden": true } : { role: "img", "aria-label": title })}
     >
-      <title>{title}</title>
-      {/* Left chevron < (ink) */}
-      <polyline
-        points="66,20 30,60 66,100"
-        stroke={ink}
-        strokeWidth="22"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Right chevron > (accent) */}
-      <polyline
-        points="134,20 170,60 134,100"
-        stroke={accent}
-        strokeWidth="22"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* S — upper bowl (ink) */}
-      <path
-        d="M120 40 C120 27 108 22 98 22 C85 22 77 30 77 41 C77 53 89 57 100 61"
-        stroke={ink}
-        strokeWidth="21"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* S — lower bowl (accent) */}
-      <path
-        d="M100 61 C111 65 123 69 123 81 C123 92 115 100 102 100 C92 100 80 95 80 82"
-        stroke={accent}
-        strokeWidth="21"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {!decorative && <title>{title}</title>}
+      <rect width="48" height="48" rx={LOGO_PATHS.radius} fill={tile} />
+      <path d={LOGO_PATHS.s} stroke={letter} strokeWidth={LOGO_PATHS.strokeWidth} />
+      <circle {...LOGO_PATHS.dot} fill="#d92d20" />
     </svg>
   );
 }

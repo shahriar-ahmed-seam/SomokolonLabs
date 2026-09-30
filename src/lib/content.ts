@@ -214,21 +214,6 @@ export function getStats(): { value: string; label: string }[] {
   ];
 }
 
-export const techStack: string[] = [
-  "Python",
-  "TypeScript",
-  "Next.js",
-  "React",
-  "FastAPI",
-  "PyTorch",
-  "PostgreSQL",
-  "Docker",
-  "Kubernetes",
-  "LangGraph",
-  "Kafka",
-  "AWS",
-];
-
 export const contact = {
   email: "hello@somokolonlabs.com",
   phone: "+880 1700-942829",

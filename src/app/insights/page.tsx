@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowUpRight, Clock } from "lucide-react";
 import { sortedPosts, formatDate } from "@/lib/insights";
-import { Reveal } from "@/components/Reveal";
-import CTABand from "@/components/CTABand";
+import { contact } from "@/lib/content";
+import PageHero from "@/components/site/PageHero";
+import FinalCTA from "@/components/site/FinalCTA";
+import { FadeIn } from "@/components/site/motion";
+import styles from "@/components/site/site.module.css";
 
 export const metadata: Metadata = {
   title: "Insights",
@@ -17,71 +20,74 @@ export default function InsightsPage() {
 
   return (
     <>
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <Reveal>
-            <p className="eyebrow">Insights</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-              Notes from the build
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              Writeups from work we&apos;ve actually done — the decisions, the
-              things that broke, and the numbers that came out. No trend pieces.
-            </p>
-          </Reveal>
+      <PageHero
+        eyebrow="Insights"
+        title="Notes from"
+        accent="the build."
+        scene="discover"
+        compact
+        lead="Writeups from work we've actually done: the decisions, the things that broke, and the numbers that came out. No trend pieces."
+      />
+
+      <section className="bg-background">
+        <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+          <p className="text-sm font-semibold text-ink-soft">
+            {all.length} {all.length === 1 ? "note" : "notes"}
+          </p>
+          <ol className="mt-6 border-b border-ink/15">
+            {all.map((post, i) => (
+              <li key={post.slug} className="border-t border-ink/15">
+                <FadeIn delay={i * 0.05}>
+                  <Link
+                    href={`/insights/${post.slug}`}
+                    className="group grid gap-6 py-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent md:py-12 lg:grid-cols-12 lg:gap-8"
+                  >
+                    <div className="flex items-center gap-3 text-sm text-ink-soft lg:col-span-3 lg:flex-col lg:items-start lg:gap-1.5">
+                      <time dateTime={post.date} className="font-semibold text-ink">
+                        {formatDate(post.date)}
+                      </time>
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock size={13} aria-hidden="true" />
+                        {post.readingMinutes} min read
+                      </span>
+                    </div>
+
+                    <div className="lg:col-span-7">
+                      <h2
+                        className={`${styles.display} text-2xl font-semibold leading-tight tracking-[-0.03em] text-ink transition-colors group-hover:text-accent sm:text-3xl md:text-[2.1rem]`}
+                      >
+                        {post.title}
+                      </h2>
+                      <p className="mt-4 max-w-2xl leading-relaxed text-ink-soft">{post.summary}</p>
+                      <ul className="mt-6 flex flex-wrap gap-2" aria-label="Topics">
+                        {post.topics.map((topic) => (
+                          <li
+                            key={topic}
+                            className="bg-background-soft px-3 py-1 text-xs font-medium text-ink-soft ring-1 ring-inset ring-ink/5"
+                          >
+                            {topic}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="hidden lg:col-span-2 lg:flex lg:justify-end">
+                      <span
+                        aria-hidden="true"
+                        className="flex h-12 w-12 items-center justify-center border border-ink/15 text-ink transition-colors duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-white"
+                      >
+                        <ArrowUpRight size={18} />
+                      </span>
+                    </div>
+                  </Link>
+                </FadeIn>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <ul className="flex flex-col gap-4">
-          {all.map((post, i) => (
-            <Reveal key={post.slug} delay={i * 0.04}>
-              <li>
-                <Link
-                  href={`/insights/${post.slug}`}
-                  className="group block rounded-2xl border border-border bg-white p-8 transition-colors hover:border-accent/40"
-                >
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-ink-soft">
-                    <time dateTime={post.date} className="font-medium">
-                      {formatDate(post.date)}
-                    </time>
-                    <span aria-hidden="true">·</span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <Clock size={13} aria-hidden="true" />
-                      {post.readingMinutes} min read
-                    </span>
-                  </div>
-
-                  <h2 className="mt-4 text-2xl font-bold tracking-tight text-ink group-hover:text-accent">
-                    {post.title}
-                  </h2>
-                  <p className="mt-3 max-w-3xl leading-relaxed text-ink-soft">
-                    {post.summary}
-                  </p>
-
-                  <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-                    <ul className="flex flex-wrap gap-2">
-                      {post.topics.map((topic) => (
-                        <li
-                          key={topic}
-                          className="rounded-full border border-border bg-background-soft px-3 py-1 text-xs font-medium text-ink-soft"
-                        >
-                          {topic}
-                        </li>
-                      ))}
-                    </ul>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
-                      Read the note <ArrowRight size={15} aria-hidden="true" />
-                    </span>
-                  </div>
-                </Link>
-              </li>
-            </Reveal>
-          ))}
-        </ul>
-      </section>
-
-      <CTABand />
+      <FinalCTA email={contact.email} />
     </>
   );
 }

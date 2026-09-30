@@ -8,15 +8,6 @@ const nextConfig: NextConfig = {
   // Trims the "x-powered-by: Next.js" fingerprint.
   poweredByHeader: false,
 
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-    ],
-  },
-
   async headers() {
     return [
       {
