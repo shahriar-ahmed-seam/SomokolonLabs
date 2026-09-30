@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { LOGO_PATHS } from "@/components/LogoMark";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = "image/png";
@@ -99,35 +100,15 @@ export function renderOgImage({
           }}
         >
           <div style={{ display: "flex", alignItems: "center" }}>
-            {/* Logo mark: < S > */}
-            <svg width="66" height="40" viewBox="0 0 200 120" fill="none">
-              <polyline
-                points="66,20 30,60 66,100"
-                stroke="#ffffff"
-                strokeWidth="22"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <polyline
-                points="134,20 170,60 134,100"
-                stroke={ACCENT}
-                strokeWidth="22"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M120 40 C120 27 108 22 98 22 C85 22 77 30 77 41 C77 53 89 57 100 61"
-                stroke="#ffffff"
-                strokeWidth="21"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M100 61 C111 65 123 69 123 81 C123 92 115 100 102 100 C92 100 80 95 80 82"
-                stroke={ACCENT}
-                strokeWidth="21"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            {/* Logo mark "S." on a white tile (the on-dark variant). */}
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect width="48" height="48" rx={LOGO_PATHS.radius} fill="#ffffff" />
+              <path d={LOGO_PATHS.s} stroke={INK} strokeWidth={LOGO_PATHS.strokeWidth} />
+              <circle
+                cx={LOGO_PATHS.dot.cx}
+                cy={LOGO_PATHS.dot.cy}
+                r={LOGO_PATHS.dot.r}
+                fill={ACCENT}
               />
             </svg>
             <div

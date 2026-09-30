@@ -37,6 +37,8 @@ yarn-error.log*
 
 # vercel
 .vercel
+# raw video downloads; encoded clips go to public/video (npm run video)
+/video-src/
 
 # typescript
 *.tsbuildinfo

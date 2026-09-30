@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
+import PageHero from "@/components/site/PageHero";
 
 /**
- * Shared shell for legal / policy pages. Narrow measure, plain typography,
- * and a "last updated" line — the two things these pages actually need.
+ * Shared shell for legal / policy pages. A compact dark hero, then a narrow
+ * measure with plain typography and a "last updated" line.
  */
 export default function LegalPage({
   title,
@@ -23,24 +24,19 @@ export default function LegalPage({
 
   return (
     <>
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-3xl px-6 py-20">
-          <p className="eyebrow">Legal</p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-            {title}
-          </h1>
-          <p className="mt-5 leading-relaxed text-ink-soft">{intro}</p>
-          <p className="mt-6 text-sm text-ink-soft">
-            Last updated{" "}
-            <time dateTime={updated} className="font-medium text-ink">
-              {updatedLabel}
-            </time>
-          </p>
-        </div>
-      </section>
+      <PageHero eyebrow="Legal" title={title} titleSize="md" scene="plan" compact lead={intro}>
+        <p className="text-sm text-white/55">
+          Last updated{" "}
+          <time dateTime={updated} className="font-semibold text-white">
+            {updatedLabel}
+          </time>
+        </p>
+      </PageHero>
 
-      <div className="mx-auto max-w-3xl px-6 py-16 [&_a]:font-medium [&_a]:text-accent [&_a:hover]:text-accent-dark [&_h2]:mt-12 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-ink [&_li]:leading-relaxed [&_li]:text-ink-soft [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-ink-soft [&_ul]:mt-4 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5">
-        {children}
+      <div className="bg-background">
+        <div className="mx-auto max-w-3xl px-6 py-20 md:py-24 [&_a]:font-semibold [&_a]:text-ink [&_a]:underline [&_a]:decoration-ink/20 [&_a]:underline-offset-4 [&_a:hover]:text-accent [&_h2]:mt-14 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-[-0.025em] [&_h2]:text-ink [&_li]:leading-relaxed [&_li]:text-ink-soft [&_p]:mt-4 [&_p]:text-[17px] [&_p]:leading-[1.75] [&_p]:text-ink-soft [&_ul]:mt-4 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5 [&_ul]:marker:text-accent">
+          {children}
+        </div>
       </div>
     </>
   );

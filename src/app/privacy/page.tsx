@@ -13,16 +13,26 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy policy"
-      updated="2026-07-31"
+      updated="2026-09-30"
       intro={`This policy covers ${company.name}'s website at somokolonlabs.com. It is written to be read, not to cover us — if something here is unclear, email us and we will explain it.`}
     >
       <h2>What we collect</h2>
-      <p>Two things, and nothing else:</p>
+      <p>Three things, and nothing else:</p>
       <ul>
         <li>
           <strong>Contact form submissions.</strong> When you use the contact or
           demo-request form we receive the name, email address, optional company
           name, and message you type. We use these only to reply to you.
+        </li>
+        <li>
+          <strong>Chat messages.</strong> When you use the assistant (the chat
+          button in the corner), the messages you type are sent to our AI
+          provider so it can write a reply. We do not keep a transcript on our
+          servers. The conversation is saved only in your own browser tab, and
+          is cleared when you close the tab or press &ldquo;Start over&rdquo;.
+          To stop abuse, we count how many messages each visitor sends using a
+          one-way hash of their IP address, never the address itself; those
+          counters expire within a day.
         </li>
         <li>
           <strong>Aggregate usage analytics.</strong> We record page views and
@@ -48,6 +58,21 @@ export default function PrivacyPage() {
         <li>
           Our email provider delivers contact-form submissions to our inbox.
         </li>
+        <li>
+          Our AI provider,{" "}
+          <a href="https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html" rel="noreferrer" target="_blank">
+            DeepSeek
+          </a>
+          , receives chat messages to generate replies. DeepSeek states that it
+          processes and stores data in the People&apos;s Republic of China, and
+          it handles messages under its own privacy policy. Please don&apos;t put
+          personal or confidential information into the chat; use the contact
+          form or email for that.
+        </li>
+        <li>
+          A database provider stores the short-lived, hashed message counters
+          described above.
+        </li>
       </ul>
       <p>
         Each is used only for that purpose. No submission data is passed to
@@ -57,8 +82,9 @@ export default function PrivacyPage() {
       <h2>How long we keep it</h2>
       <p>
         Enquiries stay in our email for as long as the conversation is
-        commercially relevant, and are deleted on request. Analytics are
-        aggregated and retained without any identifier tied to you.
+        commercially relevant, and are deleted on request. We keep no chat
+        transcripts, and the message counters expire within a day. Analytics
+        are aggregated and retained without any identifier tied to you.
       </p>
 
       <h2>Your rights</h2>

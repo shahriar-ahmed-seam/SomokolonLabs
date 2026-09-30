@@ -7,7 +7,7 @@ import { contact } from "@/lib/content";
 type Status = "idle" | "submitting" | "success" | "error";
 
 const inputClass =
-  "mt-2 w-full rounded-lg border border-border bg-background-soft px-4 py-3 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20";
+  "mt-2 w-full border border-ink/10 bg-background-soft px-4 py-3.5 text-[15px] text-ink outline-none transition-[border-color,background-color,box-shadow] placeholder:text-ink-soft/60 focus:border-ink/40 focus:bg-white focus:ring-4 focus:ring-accent/10";
 
 export default function ContactForm({
   defaultMessage = "",
@@ -59,7 +59,7 @@ export default function ContactForm({
     return (
       <div
         role="status"
-        className="flex flex-col items-center justify-center rounded-2xl border border-border bg-background-soft p-12 text-center"
+        className="flex min-h-[28rem] flex-col items-center justify-center bg-white p-12 text-center ring-1 ring-ink/10"
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
           <CheckCircle2 size={28} aria-hidden="true" />
@@ -83,8 +83,15 @@ export default function ContactForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-border bg-white p-8"
+      className="relative bg-white p-7 shadow-[0_40px_90px_-50px_rgba(11,21,36,0.45)] ring-1 ring-ink/10 sm:p-10"
     >
+      <h2 className="font-display text-2xl font-semibold tracking-[-0.03em] text-ink">
+        Tell us about the project
+      </h2>
+      <p className="mt-2 text-sm text-ink-soft">
+        A few lines is plenty. Fields marked <span className="text-accent">*</span> are required.
+      </p>
+      <div className="my-8 h-px bg-border" />
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div className="sm:col-span-1">
           <label htmlFor="name" className="text-sm font-medium text-ink">
@@ -159,7 +166,7 @@ export default function ContactForm({
       {/* aria-live so the failure is announced, not just displayed. */}
       <div id={errorId} role="alert" aria-live="polite">
         {status === "error" && (
-          <div className="mt-4 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3">
+          <div className="mt-4 border border-accent/20 bg-accent/5 px-4 py-3">
             <p className="text-sm text-accent">{error}</p>
             {/* Clickable escape hatch — a dead-end error message is no use. */}
             <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
@@ -185,10 +192,12 @@ export default function ContactForm({
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark disabled:opacity-60"
+        className="group mt-8 inline-flex items-center gap-3 rounded-md bg-accent py-3 pl-7 pr-3 text-sm font-semibold text-white shadow-[0_14px_40px_-14px_rgba(217,45,32,0.8)] transition-colors hover:bg-accent-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:opacity-60"
       >
         {status === "submitting" ? "Sending..." : "Send message"}
-        {status !== "submitting" && <ArrowRight size={16} aria-hidden="true" />}
+        <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-white text-accent">
+          <ArrowRight size={15} aria-hidden="true" className="transition-transform duration-500 group-hover:-rotate-45" />
+        </span>
       </button>
     </form>
   );

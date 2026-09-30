@@ -2,17 +2,26 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Check } from "lucide-react";
 import {
   products,
   productCategories,
   productsByCategory,
+  productTones,
   company,
+  contact,
   demoHref,
 } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site";
-import { Reveal } from "@/components/Reveal";
-import CTABand from "@/components/CTABand";
+import ProductGrid from "@/components/ProductGrid";
+import PageHero from "@/components/site/PageHero";
+import SectionIntro from "@/components/site/SectionIntro";
+import FinalCTA from "@/components/site/FinalCTA";
+import TechChip from "@/components/site/TechChip";
+import { FadeIn } from "@/components/site/motion";
+import { logoFor } from "@/components/site/techLogos";
+import { CATEGORY_SCENE } from "@/components/site/categoryMeta";
+import styles from "@/components/site/site.module.css";
 
 export function generateStaticParams() {
   return products.map((p) => ({ category: p.category, product: p.slug }));
@@ -49,9 +58,11 @@ export async function generateMetadata({
 }
 
 const statusStyles: Record<string, string> = {
-  Live: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  Beta: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  Live: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/30",
+  Beta: "bg-amber-400/10 text-amber-200 ring-amber-400/30",
 };
+
+const FALLBACK_TONE = { deep: "#1b2638", light: "#b8c9f0" };
 
 export default async function ProductDetail({
   params,
@@ -59,16 +70,20 @@ export default async function ProductDetail({
   params: Promise<{ category: string; product: string }>;
 }) {
   const { category, product } = await params;
-  const item = products.find(
-    (p) => p.slug === product && p.category === category
-  );
+  const item = products.find((p) => p.slug === product && p.category === category);
   if (!item) notFound();
 
   const cat = productCategories.find((c) => c.slug === category);
-  const related = productsByCategory(category).filter((p) => p.slug !== product);
+  // Two related products: one row of large cards, no feature card.
+  const related = productsByCategory(category)
+    .filter((p) => p.slug !== product)
+    .slice(0, 2);
   const metrics = item.metrics ?? [];
   const enquiryHref = `/contact?product=${encodeURIComponent(item.name)}`;
   const demo = demoHref(item);
+  const demoHost = demo ? new URL(demo).host : null;
+  const tone = productTones[item.slug] ?? FALLBACK_TONE;
+  const stack = item.stack.map((name) => ({ name, logo: logoFor(name) }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -91,214 +106,178 @@ export default async function ProductDetail({
         }}
       />
 
-      {/* Header */}
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-16">
-          <Reveal>
-            <Link
-              href={`/products/${category}`}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-accent"
-            >
-              <ArrowLeft size={15} aria-hidden="true" /> {cat?.name ?? "Products"}
-            </Link>
-          </Reveal>
-
-          <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-center">
-            <div>
-              <Reveal>
-                <span
-                  className={`inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${statusStyles[item.status]}`}
-                >
-                  {item.status}
-                </span>
-                <h1 className="mt-4 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-                  {item.name}
-                </h1>
-                <p className="mt-3 text-lg font-medium text-accent">
-                  {item.tagline}
-                </p>
-                <p className="mt-5 text-base leading-relaxed text-ink-soft">
-                  {item.description}
-                </p>
-
-                <div className="mt-8 flex flex-wrap gap-4">
-                  {demo && (
-                    <a
-                      href={demo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
-                    >
-                      Open live demo
-                      <ArrowUpRight size={16} aria-hidden="true" />
-                    </a>
-                  )}
-                  <Link
-                    href={enquiryHref}
-                    className="inline-flex items-center gap-2 rounded-full border border-border px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-ink"
-                  >
-                    Enquire about {item.name}
-                  </Link>
-                </div>
-              </Reveal>
-            </div>
-
-            <Reveal delay={0.1}>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-white shadow-[0_24px_60px_-30px_rgba(11,21,36,0.4)]">
+      <PageHero
+        back={{ href: `/products/${category}`, label: cat?.name ?? "Products" }}
+        title={item.name}
+        scene={CATEGORY_SCENE[category] ?? "flow"}
+        glow={`${tone.light}55`}
+        lead={<p className="text-white/80">{item.tagline}</p>}
+        aside={
+          <div
+            className="p-2.5 ring-1 ring-white/10 sm:p-3.5"
+            style={{ background: `linear-gradient(160deg, ${tone.light}38, ${tone.deep} 70%)` }}
+          >
+            <div className="overflow-hidden bg-[#0d1117] shadow-[0_40px_100px_-30px_rgba(0,0,0,0.75)] ring-1 ring-white/10">
+              <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-white/20" aria-hidden="true" />
+                {demoHost && (
+                  <span className="ml-3 truncate bg-white/[0.06] px-3 py-1 text-[11px] text-white/50">
+                    {demoHost}
+                  </span>
+                )}
+              </div>
+              <div className="relative aspect-[16/10]">
                 {item.screenshot ? (
                   <Image
                     src={item.screenshot}
                     alt={`${item.name} interface`}
                     fill
-                    className="object-cover object-top"
-                    sizes="(max-width: 1024px) 100vw, 640px"
                     priority
+                    className="object-cover object-top"
+                    sizes="(max-width: 1024px) 100vw, 620px"
                   />
                 ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-ink/5 to-accent/10" />
+                  <div
+                    className="h-full w-full"
+                    style={{ background: `radial-gradient(circle at 50% 30%, ${tone.light}40, ${tone.deep})` }}
+                  />
                 )}
               </div>
-            </Reveal>
+            </div>
           </div>
+        }
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          {demo && (
+            <a
+              href={demo}
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-2 rounded-md bg-accent px-7 py-3.5 text-sm font-semibold text-white shadow-[0_12px_40px_-12px_rgba(217,45,32,0.8)] transition-colors hover:bg-accent-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            >
+              Open live demo
+              <ArrowUpRight
+                size={16}
+                aria-hidden="true"
+                className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          )}
+          <Link
+            href={enquiryHref}
+            className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/[0.05] px-7 py-3.5 text-sm font-semibold text-white backdrop-blur transition-colors hover:border-white/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            Talk to us about {item.name}
+          </Link>
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold ring-1 ring-inset ${
+              statusStyles[item.status] ?? statusStyles.Live
+            }`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+            {item.status}
+          </span>
         </div>
-      </section>
+      </PageHero>
 
       {/* Measured results — only renders when there are real numbers to show. */}
       {metrics.length > 0 && (
-        <section className="border-b border-border bg-ink">
-          <div className="mx-auto max-w-7xl px-6 py-14">
-            <Reveal>
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-accent">
-                By the numbers
-              </p>
-            </Reveal>
-            <dl className="mt-8 grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
-              {metrics.map((metric, i) => (
-                <Reveal key={metric.label} delay={i * 0.05}>
-                  <dt className="text-3xl font-bold tracking-tight text-white">
-                    {metric.value}
-                  </dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-white/60">
-                    {metric.label}
-                  </dd>
-                </Reveal>
-              ))}
-            </dl>
-          </div>
+        <section className="border-b border-border bg-background">
+          <dl className="mx-auto grid max-w-7xl gap-x-8 gap-y-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4">
+            {metrics.map((metric, i) => (
+              <FadeIn key={metric.label} delay={i * 0.06} className="flex flex-col-reverse border-t border-ink/15 pt-6">
+                <dt className="mt-3 text-sm leading-relaxed text-ink-soft">{metric.label}</dt>
+                <dd
+                  className={`${styles.display} text-5xl font-semibold tracking-[-0.05em] text-ink`}
+                >
+                  {metric.value}
+                </dd>
+              </FadeIn>
+            ))}
+          </dl>
         </section>
       )}
 
-      {/* Features + spec */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <Reveal>
-              <p className="eyebrow">Capabilities</p>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-                What {item.name} does
-              </h2>
-            </Reveal>
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      {/* Overview, features and the tech sidebar */}
+      <section className="bg-background">
+        <div className="mx-auto grid max-w-7xl gap-16 px-6 py-24 md:py-32 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <SectionIntro eyebrow="Overview" title={`What ${item.name}`} accent="does." />
+            <FadeIn delay={0.1}>
+              <p className="mt-8 text-lg leading-relaxed text-ink-soft">{item.description}</p>
+            </FadeIn>
+            <ul className="mt-12 grid gap-x-8 gap-y-6 sm:grid-cols-2">
               {item.features.map((f, i) => (
-                <Reveal key={f} delay={i * 0.05}>
-                  <div className="flex gap-3">
+                <li key={f}>
+                  <FadeIn delay={(i % 2) * 0.06} className="flex gap-3 border-t border-border pt-5">
                     <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
                       <Check size={14} aria-hidden="true" />
                     </span>
-                    <p className="text-sm leading-relaxed text-ink">{f}</p>
-                  </div>
-                </Reveal>
+                    <p className="text-[15px] leading-relaxed text-ink">{f}</p>
+                  </FadeIn>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
 
-          {/* Tech spec sidebar */}
-          <Reveal delay={0.1}>
-            <div className="rounded-2xl border border-border bg-background-soft p-6">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          <aside aria-label={`${item.name} details`} className="lg:col-span-4 lg:col-start-9">
+            <FadeIn delay={0.1} className="bg-background-soft p-7 ring-1 ring-ink/5 lg:sticky lg:top-28">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-soft">
                 Built with
-              </h3>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {item.stack.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-md border border-border bg-white px-2.5 py-1 text-xs font-medium text-ink"
-                  >
-                    {t}
-                  </span>
+              </h2>
+              <ul className="mt-5 flex flex-wrap gap-2">
+                {stack.map((t) => (
+                  <TechChip key={t.name} name={t.name} logo={t.logo} />
                 ))}
-              </div>
+              </ul>
 
-              <div className="mt-6 border-t border-border pt-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-soft">
-                  Status
-                </h3>
-                <p className="mt-2 text-sm font-semibold text-ink">{item.status}</p>
-              </div>
+              <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-ink/10 pt-6 text-sm">
+                <div>
+                  <dt className="text-ink-soft">Category</dt>
+                  <dd className="mt-1 font-semibold text-ink">{cat?.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-ink-soft">Status</dt>
+                  <dd className="mt-1 font-semibold text-ink">{item.status}</dd>
+                </div>
+              </dl>
 
               {demo && (
                 <a
                   href={demo}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
+                  className="mt-8 flex w-full items-center justify-center gap-2 rounded-md bg-ink px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent"
                 >
                   Open live demo
                   <ArrowUpRight size={15} aria-hidden="true" />
+                  <span className="sr-only">(opens in a new tab)</span>
                 </a>
               )}
-              <Link
-                href={enquiryHref}
-                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-white px-5 py-3 text-sm font-semibold text-ink transition-colors hover:border-ink"
-              >
-                Talk to us about it
-              </Link>
-            </div>
-          </Reveal>
+            </FadeIn>
+          </aside>
         </div>
       </section>
 
-      {/* Related products */}
       {related.length > 0 && (
         <section className="border-t border-border bg-background-soft">
-          <div className="mx-auto max-w-7xl px-6 py-20">
-            <Reveal>
-              <h2 className="text-2xl font-bold tracking-tight text-ink">
-                More in {cat?.name}
-              </h2>
-            </Reveal>
-            <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p, i) => (
-                <Reveal key={p.slug} delay={i * 0.05}>
-                  <li>
-                    <Link
-                      href={`/products/${category}/${p.slug}`}
-                      className="group flex h-full flex-col rounded-xl border border-border bg-white p-6 transition-colors hover:border-ink/20"
-                    >
-                      <h3 className="font-bold text-ink group-hover:text-accent">
-                        {p.name}
-                      </h3>
-                      <p className="mt-2 flex-1 text-sm text-ink-soft">
-                        {p.tagline}
-                      </p>
-                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent">
-                        View
-                        <ArrowRight
-                          size={14}
-                          aria-hidden="true"
-                          className="transition-transform group-hover:translate-x-1"
-                        />
-                      </span>
-                    </Link>
-                  </li>
-                </Reveal>
-              ))}
-            </ul>
+          <div className="mx-auto max-w-7xl px-6 py-24">
+            <SectionIntro
+              eyebrow="Keep exploring"
+              title={`More in ${cat?.name ?? "this category"}`}
+              link={{ href: `/products/${category}`, label: "View category" }}
+            />
+            <div className="mt-14">
+              <ProductGrid products={related} />
+            </div>
           </div>
         </section>
       )}
 
-      <CTABand />
+      <FinalCTA email={contact.email} />
     </>
   );
 }

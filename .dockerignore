@@ -36,6 +36,11 @@ CONTRIBUTING.md
 SECURITY.md
 github-org-profile
 
+# raw video downloads and design references (not part of the site)
+video-src
+image
+template.md
+docs
 # misc
 .vercel
 *.tsbuildinfo

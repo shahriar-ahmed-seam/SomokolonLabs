@@ -1,11 +1,16 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
-import { productCategories, productsByCategory, products } from "@/lib/content";
-import { Reveal } from "@/components/Reveal";
-import { Icon } from "@/components/icons/Icon";
-import ProductCard from "@/components/ProductCard";
-import CTABand from "@/components/CTABand";
+import {
+  contact,
+  demoHref,
+  productCategories,
+  productsByCategory,
+  products,
+} from "@/lib/content";
+import ProductGrid from "@/components/ProductGrid";
+import PageHero from "@/components/site/PageHero";
+import SectionIntro from "@/components/site/SectionIntro";
+import CategoryNav from "@/components/site/CategoryNav";
+import FinalCTA from "@/components/site/FinalCTA";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -15,75 +20,72 @@ export const metadata: Metadata = {
 };
 
 export default function ProductsPage() {
-  const liveCount = products.filter((p) => p.demoUrl).length;
+  const liveCount = products.filter((p) => demoHref(p)).length;
+  const everyOneLive = liveCount === products.length;
 
   return (
     <>
-      {/* Header */}
-      <section className="border-b border-border bg-background-soft">
-        <div className="mx-auto max-w-7xl px-6 py-20">
-          <Reveal>
-            <p className="eyebrow">Our Products</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-ink sm:text-5xl">
-              {products.length} products, all of them running
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">
-              Everything below is deployed and open to try — {liveCount} with a
-              live demo you can use right now, no sign-up. Each one started as a
-              real problem in retail, finance, healthcare, agriculture, or
-              engineering operations.
-            </p>
-          </Reveal>
+      <PageHero
+        eyebrow="Products"
+        title={`${products.length} products.`}
+        accent="All of them running."
+        scene="build"
+        lead={
+          <>
+            Everything here is deployed and open to try,{" "}
+            {everyOneLive ? "every one" : `${liveCount} of them`} with a live demo
+            you can use right now, no sign-up. Each started as a real problem in
+            retail, finance, healthcare, agriculture, or engineering operations.
+          </>
+        }
+      >
+        <dl className="flex flex-wrap gap-x-10 gap-y-4">
+          {productCategories.map((c) => (
+            <div key={c.slug}>
+              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">
+                {c.name}
+              </dt>
+              <dd className="font-display mt-1 text-3xl font-semibold tracking-[-0.04em] text-white">
+                {productsByCategory(c.slug).length}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </PageHero>
+
+      {/* Tab rail. The active tab is white and opens into the white section below. */}
+      <div className="bg-background-soft">
+        <div className="mx-auto max-w-7xl px-6 pt-10">
+          <CategoryNav />
         </div>
-      </section>
+      </div>
 
-      {/* Categories with their products */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex flex-col gap-24">
-          {productCategories.map((category, ci) => {
-            const items = productsByCategory(category.slug);
-            return (
-              <div key={category.slug}>
-                <Reveal delay={ci * 0.03}>
-                  <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent">
-                        <Icon name={category.icon} />
-                      </span>
-                      <div>
-                        <h2 className="text-2xl font-bold tracking-tight text-ink">
-                          {category.name}
-                        </h2>
-                        <p className="mt-1 max-w-xl text-sm text-ink-soft">
-                          {category.description}
-                        </p>
-                      </div>
-                    </div>
-                    <Link
-                      href={`/products/${category.slug}`}
-                      className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-accent hover:text-accent-dark"
-                    >
-                      View category <ArrowRight size={15} aria-hidden="true" />
-                    </Link>
-                  </div>
-                </Reveal>
-
-                <ul className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {items.map((product, i) => (
-                    <Reveal key={product.slug} delay={i * 0.04}>
-                      <li className="h-full">
-                        <ProductCard product={product} />
-                      </li>
-                    </Reveal>
-                  ))}
-                </ul>
+      {productCategories.map((category, ci) => {
+        const items = productsByCategory(category.slug);
+        return (
+          <section
+            key={category.slug}
+            id={category.slug}
+            aria-labelledby={`${category.slug}-title`}
+            className={ci % 2 === 1 ? "bg-background-soft" : "bg-background"}
+          >
+            <div className="mx-auto max-w-7xl px-6 py-24 md:py-28">
+              <SectionIntro
+                id={`${category.slug}-title`}
+                eyebrow={`0${ci + 1} · ${items.length} ${items.length === 1 ? "product" : "products"}`}
+                title={category.name}
+                lead={category.description}
+                link={{ href: `/products/${category.slug}`, label: "View category" }}
+              />
+              <div className="mt-14">
+                <ProductGrid products={items} priority={ci === 0 ? 1 : 0} />
               </div>
-            );
-          })}
-        </div>
-      </section>
+            </div>
+          </section>
+        );
+      })}
 
-      <CTABand />
+      <FinalCTA email={contact.email} />
     </>
   );
 }

@@ -114,7 +114,6 @@ Re-add any secrets that did not carry over (✅ safe):
 
 ```bash
 gh secret set RESEND_API_KEY --repo Somokolon-Labs/somokolonlabs.com
-gh secret set UNSPLASH_ACCESS_KEY --repo Somokolon-Labs/somokolonlabs.com
 ```
 
 <!-- TODO(you): decide transfer vs fresh repo, and confirm the final repo name. The CI badge in
