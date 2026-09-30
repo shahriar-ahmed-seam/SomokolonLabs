@@ -310,6 +310,12 @@ export const products: Product[] = [
       "Clean Python bindings over the C++ core",
     ],
     demoUrl: "https://pypi.org/project/vector-vault-db/",
+    // No web interface to capture, so the image is a rendered editor view:
+    // the AVX-512 kernel verbatim from src/core/distance.cpp in the public repo,
+    // and the output of a real run of vector-vault-db 0.1.1 from PyPI (10k
+    // random 32-d vectors, HNSW m=16, ef_search=64, recall vs exact cosine).
+    // Re-render it if the code or package changes.
+    screenshot: "/work/vector-vault.webp",
     metrics: [{ value: "On PyPI", label: "Installable as a published package" }],
   },
   {
@@ -529,4 +535,5 @@ export const productTones: Record<string, { deep: string; light: string }> = {
   sentinel: { deep: "#103f46", light: "#86dce9" },
   stockpilot: { deep: "#241542", light: "#ab90df" },
   streammind: { deep: "#462410", light: "#e7ab89" },
+  "vector-vault": { deep: "#141a46", light: "#a3b1ff" },
 };

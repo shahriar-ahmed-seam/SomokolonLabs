@@ -35,7 +35,7 @@ export default function CapabilitiesPage() {
             { value: products.length, label: "Products shipped" },
           ].map((s) => (
             <div key={s.label}>
-              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">{s.label}</dt>
+              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/60">{s.label}</dt>
               <dd className="font-display mt-1 text-3xl font-semibold tracking-[-0.04em] text-white">
                 {s.value}
               </dd>
@@ -53,7 +53,7 @@ export default function CapabilitiesPage() {
                   <span className="flex h-12 w-12 items-center justify-center bg-ink text-white">
                     <Icon name={group.icon} size={22} />
                   </span>
-                  <span className={`${styles.display} text-sm font-semibold text-ink/30`}>
+                  <span className={`${styles.display} text-sm font-semibold text-ink-soft`}>
                     0{i + 1}
                   </span>
                 </div>

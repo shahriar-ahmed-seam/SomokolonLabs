@@ -91,7 +91,7 @@ export default async function ServiceDetail({
                 <FadeIn delay={i * 0.06} className="flex h-full flex-col p-8 sm:p-10">
                   <div className="flex items-start justify-between">
                     <OfferingIcon title={o.title} index={index + i} />
-                    <span className={`${styles.display} text-sm font-semibold text-ink/30`}>
+                    <span className={`${styles.display} text-sm font-semibold text-ink-soft`}>
                       0{i + 1}
                     </span>
                   </div>

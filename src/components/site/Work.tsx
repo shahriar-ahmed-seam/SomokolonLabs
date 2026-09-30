@@ -129,7 +129,7 @@ function Copy({ item }: { item: MosaicItem }) {
       >
         <span aria-hidden="true" className="h-1 w-1 rounded-full bg-current" />
         {item.categoryName}
-        {item.live && <span className="text-white/50">· Live demo</span>}
+        {item.live && <span className="text-white/75">· Live demo</span>}
       </p>
       <h3 className={`${styles.display} mt-3 text-2xl font-semibold tracking-[-0.03em] text-white lg:text-[1.75rem]`}>
         {item.name}

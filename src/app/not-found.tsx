@@ -14,7 +14,7 @@ export default function NotFound() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-ink text-white">
       <div className="absolute inset-0 -z-20">
-        <Scene name="plan" />
+        <Scene name="plan" priority />
       </div>
       <div
         aria-hidden="true"

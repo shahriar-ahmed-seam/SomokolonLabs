@@ -58,8 +58,11 @@ export default async function CategoryPage({
         </div>
       </div>
 
-      <section className="bg-background" aria-label={`${cat.name} products`}>
+      <section className="bg-background" aria-labelledby="category-products">
         <div className="mx-auto max-w-7xl px-6 py-16 md:py-20">
+          <h2 id="category-products" className="sr-only">
+            {cat.name} products
+          </h2>
           <ProductGrid products={items} priority={2} />
         </div>
       </section>

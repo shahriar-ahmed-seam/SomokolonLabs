@@ -35,7 +35,7 @@ export default function ServicesPage() {
                 href={`#${s.slug}`}
                 className="inline-flex items-center gap-2 border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/80 backdrop-blur transition-colors hover:border-white/40 hover:text-white"
               >
-                <span className="text-xs text-white/40">0{i + 1}</span>
+                <span className="text-xs text-white/60">0{i + 1}</span>
                 {s.name}
               </a>
             </li>

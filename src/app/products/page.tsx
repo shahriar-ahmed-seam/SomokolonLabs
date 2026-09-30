@@ -42,7 +42,7 @@ export default function ProductsPage() {
         <dl className="flex flex-wrap gap-x-10 gap-y-4">
           {productCategories.map((c) => (
             <div key={c.slug}>
-              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/45">
+              <dt className="text-xs font-medium uppercase tracking-[0.16em] text-white/60">
                 {c.name}
               </dt>
               <dd className="font-display mt-1 text-3xl font-semibold tracking-[-0.04em] text-white">

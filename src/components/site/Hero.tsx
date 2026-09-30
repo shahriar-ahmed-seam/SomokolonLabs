@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import styles from "./site.module.css";
-import { EASE, Magnetic, MaskLine, usePrefersReducedMotion, useScrollRange } from "./motion";
+import { EASE, Enter, Magnetic, MaskLine, usePrefersReducedMotion, useScrollRange } from "./motion";
 import Scene from "./Scene";
 
 const ROTATING = ["AI systems", "web platforms", "ML pipelines", "business software"];
@@ -34,7 +34,7 @@ export default function Hero({ practices }: { practices: string[] }) {
       className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-ink text-white"
     >
       <motion.div style={{ scale: mediaScale }} className="absolute inset-0 -z-20">
-        <Scene name="flow" />
+        <Scene name="flow" priority />
       </motion.div>
 
       {/* Scrims keep the headline legible over any frame of footage. */}
@@ -68,23 +68,15 @@ export default function Hero({ practices }: { practices: string[] }) {
         </h1>
 
         <div className="mt-10 flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.55, ease: EASE }}
-            className="max-w-xl text-base leading-relaxed text-white/70 sm:text-lg"
-          >
-            Somokolon Labs takes products from first sketch to a system real
-            users rely on: designed, built, deployed, and monitored by one
-            senior team.
-          </motion.p>
+          <Enter delay={0.35}>
+            <p className="max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
+              Somokolon Labs takes products from first sketch to a system real
+              users rely on: designed, built, deployed, and monitored by one
+              senior team.
+            </p>
+          </Enter>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
-            className="flex flex-wrap items-center gap-4"
-          >
+          <Enter delay={0.5} className="flex flex-wrap items-center gap-4">
             <Magnetic>
               <Link
                 href="/products"
@@ -98,17 +90,12 @@ export default function Hero({ practices }: { practices: string[] }) {
                 />
               </Link>
             </Magnetic>
-          </motion.div>
+          </Enter>
         </div>
       </motion.div>
 
       {/* Practice strip + scroll cue */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.9 }}
-        className="hidden border-t border-white/10 sm:block"
-      >
+      <Enter fade delay={0.7} className="hidden border-t border-white/10 sm:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-5">
           <ul className="flex flex-wrap gap-x-8 gap-y-2 text-xs font-medium uppercase tracking-[0.16em] text-white/55">
             {practices.map((p) => (
@@ -120,7 +107,7 @@ export default function Hero({ practices }: { practices: string[] }) {
             <ArrowDown size={14} aria-hidden="true" className="motion-safe:animate-bounce" />
           </span>
         </div>
-      </motion.div>
+      </Enter>
     </section>
   );
 }
