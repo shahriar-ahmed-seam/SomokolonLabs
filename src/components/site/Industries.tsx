@@ -69,7 +69,7 @@ export default function Industries({ industries }: { industries: Industry[] }) {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">
                     {industry.description}
                   </p>
-                  <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft/80">
+                  <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-soft">
                     Built
                   </p>
                   <ul className="mt-2 flex flex-wrap gap-2">

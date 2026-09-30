@@ -23,12 +23,13 @@ const interTight = Inter_Tight({
   display: "swap",
 });
 
-// Italic accent words inside headlines.
+// Italic accent words inside headlines. Only the italic is ever used, so the
+// upright style isn't downloaded.
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  style: "italic",
   display: "swap",
 });
 

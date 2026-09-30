@@ -15,9 +15,11 @@
   font-weight: 400;
 }
 
-/* Warm gradient built from the accent, for display words on dark grounds. */
+/* Warm gradient built from the accent, for display words on dark grounds.
+   Stops are a touch lighter than the brand red so every part of a word keeps
+   3:1 contrast (WCAG AA, large text) even over the brighter frames of video. */
 .accentText {
-  background-image: linear-gradient(100deg, #ff8a7a 0%, #f04438 45%, #d92d20 100%);
+  background-image: linear-gradient(100deg, #ff9486 0%, #f65a4b 50%, #ec4232 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -91,10 +93,48 @@
   pointer-events: none;
 }
 
+/* ------------------------------------------------------------ Entrances
+   First-screen entrances (MaskLine, Enter in motion.tsx). CSS rather than
+   JS so they run on first paint, before hydration. `both` holds the start
+   state during --delay and the end state afterwards. */
+.maskRise {
+  animation: maskRise 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+@keyframes maskRise {
+  from {
+    transform: translate3d(0, 115%, 0);
+  }
+}
+
+.enter {
+  animation: enter 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
+.fadeOnly {
+  animation: fadeOnly 0.9s ease-out var(--delay, 0s) both;
+}
+
+@keyframes fadeOnly {
+  from {
+    opacity: 0;
+  }
+}
+
 /* ------------------------------------------------------ Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .blobRed,
-  .blobCenter {
+  .blobCenter,
+  .maskRise,
+  .enter,
+  .fadeOnly {
     animation: none;
   }
 }

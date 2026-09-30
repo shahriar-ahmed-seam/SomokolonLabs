@@ -2,9 +2,9 @@
 
 Marketing and product site for Somokolon Labs, an AI & software development studio in Dhaka, Bangladesh.
 
-<!-- Badge URL must match the final repo path. Update the org/repo segment if this
-     repository is renamed or transferred (currently assumes Somokolon-Labs/somokolonlabs.com). -->
-[![CI](https://github.com/Somokolon-Labs/somokolonlabs.com/actions/workflows/ci.yml/badge.svg)](https://github.com/Somokolon-Labs/somokolonlabs.com/actions/workflows/ci.yml)
+<!-- Badge URL must match the repo path. Update it if the repository is transferred
+     to an organisation (see github-org-profile/SETUP.md). -->
+[![CI](https://github.com/shahriar-ahmed-seam/SomokolonLabs/actions/workflows/ci.yml/badge.svg)](https://github.com/shahriar-ahmed-seam/SomokolonLabs/actions/workflows/ci.yml)
 
 ## What this repo is
 

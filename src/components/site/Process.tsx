@@ -75,7 +75,7 @@ export default function Process({ steps }: { steps: Step[] }) {
               <span className={`${styles.display} text-7xl font-semibold tracking-[-0.05em] text-accent md:text-8xl`}>
                 {step.step}
               </span>
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/65">
                 Step {i + 1} of {steps.length}
               </span>
             </p>

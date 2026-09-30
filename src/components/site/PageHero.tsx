@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import Scene, { type SceneName } from "./Scene";
 import styles from "./site.module.css";
-import { Eyebrow, FadeIn, MaskLine } from "./motion";
+import { Enter, Eyebrow, MaskLine } from "./motion";
 
 /**
  * Dark opening section for every inner page, in the same world as the home
@@ -56,7 +56,7 @@ export default function PageHero({
       }`}
     >
       <div className="absolute inset-0 -z-20">
-        <Scene name={scene} />
+        <Scene name={scene} priority />
       </div>
       {glow && (
         <div
@@ -75,6 +75,9 @@ export default function PageHero({
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(11,21,36,0.85)_0%,rgba(11,21,36,0.25)_65%,transparent_100%)]"
       />
+      {/* On phones the copy spans the full width, past where the side scrim
+          fades out, so dim the footage a little more behind it. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-ink/35 sm:hidden" />
 
       <div
         className={`mx-auto mt-auto w-full max-w-7xl px-6 pt-36 ${compact ? "pb-14" : "pb-16 sm:pb-20"} ${
@@ -83,7 +86,7 @@ export default function PageHero({
       >
         <div className={aside ? "lg:col-span-6" : ""}>
           {back && (
-            <FadeIn y={8}>
+            <Enter>
               <Link
                 href={back.href}
                 className="group mb-8 inline-flex items-center gap-2 text-sm font-medium text-white/60 transition-colors hover:text-white"
@@ -95,12 +98,12 @@ export default function PageHero({
                 />
                 {back.label}
               </Link>
-            </FadeIn>
+            </Enter>
           )}
           {eyebrow && (
-            <FadeIn y={8}>
+            <Enter>
               <Eyebrow dark>{eyebrow}</Eyebrow>
-            </FadeIn>
+            </Enter>
           )}
 
           <h1
@@ -127,23 +130,23 @@ export default function PageHero({
           </h1>
 
           {lead && (
-            <FadeIn delay={0.25} y={14}>
+            <Enter delay={0.25}>
               <div className="mt-7 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
                 {lead}
               </div>
-            </FadeIn>
+            </Enter>
           )}
           {children && (
-            <FadeIn delay={0.35} y={14} className="mt-9">
+            <Enter delay={0.35} className="mt-9">
               {children}
-            </FadeIn>
+            </Enter>
           )}
         </div>
 
         {aside && (
-          <FadeIn delay={0.3} y={24} className="lg:col-span-6">
+          <Enter delay={0.3} className="lg:col-span-6">
             {aside}
-          </FadeIn>
+          </Enter>
         )}
       </div>
 

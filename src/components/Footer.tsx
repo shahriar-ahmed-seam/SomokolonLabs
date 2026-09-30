@@ -50,7 +50,7 @@ export default function Footer() {
                 className="text-accent transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
               />
             </a>
-            <p className="mt-3 text-sm text-white/50">
+            <p className="mt-3 text-sm text-white/65">
               <a
                 href={`tel:${contact.phone.replace(/\s/g, "")}`}
                 className="hover:text-white"
@@ -78,7 +78,7 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-7">
             {columns.map((col) => (
               <div key={col.title}>
-                <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
                   {col.title}
                 </h2>
                 <ul className="mt-5 space-y-3">
@@ -101,24 +101,25 @@ export default function Footer() {
 
       {/* Oversized wordmark, cropped by the bottom edge. Decorative. */}
       <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden">
-        <p className="font-display mx-auto -mb-[0.24em] max-w-7xl whitespace-nowrap px-6 text-center text-[15.5vw] font-semibold leading-none tracking-[-0.06em] text-white/[0.045] xl:text-[12.5rem]">
-          Somokolon<span className="text-accent/30">.</span>
-        </p>
+        <p
+          data-wordmark="Somokolon"
+          className="font-display mx-auto -mb-[0.24em] max-w-7xl whitespace-nowrap px-6 text-center text-[15.5vw] font-semibold leading-none tracking-[-0.06em] text-white/[0.045] before:content-[attr(data-wordmark)] after:text-accent/30 after:content-['.'] xl:text-[12.5rem]"
+        />
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-xs text-white/40 sm:flex-row">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-xs text-white/55 sm:flex-row">
           <p>
             © {new Date().getFullYear()} {company.name}. {contact.location}.
           </p>
           <ul className="flex items-center gap-5">
             <li>
-              <Link href="/privacy" className="hover:text-white/70">
+              <Link href="/privacy" className="hover:text-white">
                 Privacy
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="hover:text-white/70">
+              <Link href="/terms" className="hover:text-white">
                 Terms
               </Link>
             </li>

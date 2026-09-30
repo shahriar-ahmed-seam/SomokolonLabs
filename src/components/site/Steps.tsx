@@ -24,7 +24,7 @@ export default function Steps({ steps, dark = false }: { steps: Step[]; dark?: b
           <FadeIn delay={i * 0.08}>
             <span
               className={`${styles.display} block text-5xl font-semibold tracking-[-0.05em] ${
-                dark ? "text-white/25" : "text-ink/20"
+                dark ? "text-white/40" : "text-ink/50"
               }`}
             >
               {step.step}

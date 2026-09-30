@@ -305,7 +305,7 @@ function Dropdown({
 function MobileGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="py-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">{label}</p>
       <div className="mt-2">{children}</div>
     </div>
   );

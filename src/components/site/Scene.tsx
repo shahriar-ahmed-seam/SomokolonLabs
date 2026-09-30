@@ -39,6 +39,7 @@ export default function Scene({
   name,
   video = sceneVideo(name),
   active = true,
+  priority = false,
   className = "",
 }: {
   name: SceneName;
@@ -46,6 +47,12 @@ export default function Scene({
   video?: VideoSource;
   /** False while the scene is stacked out of sight; its clip stays paused. */
   active?: boolean;
+  /**
+   * True for scenes in the first screen (page heroes). Their poster is the
+   * largest thing painted, so it loads eagerly at high priority instead of
+   * lazily; this is what the page's LCP waits on.
+   */
+  priority?: boolean;
   className?: string;
 }) {
   const hasVideo = Boolean(video && (video.mp4 || video.webm));
@@ -53,7 +60,7 @@ export default function Scene({
   return (
     <div aria-hidden="true" className={`${styles.scene} ${SCENE_CLASS[name]} ${className}`}>
       {hasVideo && video ? (
-        <SceneVideo video={video} active={active} />
+        <SceneVideo video={video} active={active} priority={priority} />
       ) : (
         <div className={styles.drift}>
           <svg
@@ -78,7 +85,15 @@ export default function Scene({
 // Screens at or narrower than 3:4 get the 9:16 cut when one exists.
 const PORTRAIT_MEDIA = "(max-aspect-ratio: 3/4)";
 
-function SceneVideo({ video, active }: { video: VideoSource; active: boolean }) {
+function SceneVideo({
+  video,
+  active,
+  priority,
+}: {
+  video: VideoSource;
+  active: boolean;
+  priority: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   const reduce = usePrefersReducedMotion();
   const inView = useInView(ref, { margin: "120px 0px" });
@@ -108,9 +123,17 @@ function SceneVideo({ video, active }: { video: VideoSource; active: boolean }) 
       {video.poster && (
         <picture>
           {video.portrait?.poster && <source media={PORTRAIT_MEDIA} srcSet={video.portrait.poster} />}
-          {/* Lazy: the pinned process section stacks five scenes below the
-              fold. Posters in the first screen still load straight away. */}
-          <img src={video.poster} alt="" decoding="async" loading="lazy" className={media} style={focus} />
+          {/* Hero posters load eagerly at high priority; the rest (e.g. the
+              five stacked scenes in the pinned process section) lazily. */}
+          <img
+            src={video.poster}
+            alt=""
+            decoding="async"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            className={media}
+            style={focus}
+          />
         </picture>
       )}
       <video

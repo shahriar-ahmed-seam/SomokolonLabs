@@ -16,7 +16,7 @@
  * hydration mismatch on the current site's <Reveal>.)
  */
 
-import { Fragment, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import {
   animate,
   motion,
@@ -98,7 +98,13 @@ export function FadeIn({
   );
 }
 
-/** A single line that rises out of a mask on mount. Used in the hero. */
+/**
+ * A single line that rises out of a mask on first paint. Used in heroes.
+ *
+ * Pure CSS, so the headline animates as soon as the HTML arrives instead of
+ * waiting for JavaScript to hydrate (on a slow phone that wait is seconds,
+ * and it delays the page's largest paint). Off under reduced motion.
+ */
 export function MaskLine({
   children,
   delay = 0,
@@ -110,15 +116,36 @@ export function MaskLine({
 }) {
   return (
     <span className={`block overflow-hidden pb-[0.1em] -mb-[0.1em] ${className}`}>
-      <motion.span
-        className="block"
-        initial={{ y: "115%" }}
-        animate={{ y: "0%" }}
-        transition={{ duration: 1.1, delay, ease: EASE }}
-      >
+      <span className={`block ${styles.maskRise}`} style={{ "--delay": `${delay}s` } as CSSProperties}>
         {children}
-      </motion.span>
+      </span>
     </span>
+  );
+}
+
+/**
+ * Fade-and-rise entrance for above-the-fold content, in CSS for the same
+ * reason as MaskLine. Use FadeIn for content further down the page.
+ */
+export function Enter({
+  children,
+  className = "",
+  delay = 0,
+  fade = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  /** Opacity only, no movement. */
+  fade?: boolean;
+}) {
+  return (
+    <div
+      className={`${fade ? styles.fadeOnly : styles.enter} ${className}`}
+      style={{ "--delay": `${delay}s` } as CSSProperties}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -173,6 +200,13 @@ export function SplitWords({
   );
 }
 
+// Words start part-faded rather than nearly invisible, so the text meets WCAG
+// AA contrast for large text (3:1) at every scroll position, not only once
+// fully revealed. Accent words need a higher floor because red on white has
+// less contrast to spare.
+const FLOOR = 0.5;
+const ACCENT_FLOOR = 0.72;
+
 /**
  * Paragraph whose words brighten one by one as it scrolls through the
  * viewport. Words listed in `highlight` switch to the serif accent.
@@ -201,15 +235,15 @@ export function ScrollWords({
         const start = i / words.length;
         const end = start + 1 / words.length;
         const bare = word.replace(/[^\p{L}\p{N}-]/gu, "").toLowerCase();
+        const accent = marked.has(bare);
         return (
           <ScrollWord
             key={`${word}-${i}`}
             progress={scrollYProgress}
             range={[start, end]}
             reduce={reduce}
-            className={
-              marked.has(bare) ? `${styles.serif} italic text-accent` : undefined
-            }
+            floor={accent ? ACCENT_FLOOR : FLOOR}
+            className={accent ? `${styles.serif} italic text-accent` : undefined}
           >
             {word}
           </ScrollWord>
@@ -224,15 +258,17 @@ function ScrollWord({
   progress,
   range,
   reduce,
+  floor,
   className,
 }: {
   children: string;
   progress: MotionValue<number>;
   range: [number, number];
   reduce: boolean;
+  floor: number;
   className?: string;
 }) {
-  const opacity = useScrollRange(progress, range, [0.14, 1], 1, reduce);
+  const opacity = useScrollRange(progress, range, [floor, 1], 1, reduce);
   return (
     <>
       <motion.span style={{ opacity }} className={className}>
@@ -355,7 +391,7 @@ export function Eyebrow({
   return (
     <p
       className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] ${
-        dark ? "text-white/60" : "text-ink-soft"
+        dark ? "text-white/75" : "text-ink-soft"
       } ${center ? "justify-center" : ""} ${className}`}
     >
       <span aria-hidden="true" className="h-px w-8 bg-accent" />
