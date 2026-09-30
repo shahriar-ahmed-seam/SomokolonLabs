@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { company, contact, differentiators, engagement, getStats } from "@/lib/content";
 import { Icon } from "@/components/icons/Icon";
 import PageHero from "@/components/site/PageHero";
@@ -17,11 +18,6 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const stats = getStats();
-  const initials = company.founder
-    .split(" ")
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("");
 
   return (
     <>
@@ -44,9 +40,13 @@ export default function AboutPage() {
               A small senior team, on purpose.
             </h2>
             <div className="mt-10 flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white">
-                {initials}
-              </span>
+              <Image
+                src="/founder.jpg"
+                alt={`Portrait of ${company.founder}`}
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-full bg-ink object-cover ring-1 ring-ink/10"
+              />
               <div>
                 <p className="text-sm font-semibold text-ink">{company.founder}</p>
                 <p className="text-sm text-ink-soft">Founder, {company.name}</p>
